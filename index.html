@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CMS Ciberseguridad — Manual Instructivo</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- FontAwesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <style>
+    /* ============================================================
+       Custom Scrollbar — Cybersecurity Dark Theme
+    ============================================================ */
+    ::-webkit-scrollbar           { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track     { background: #020617; }
+    ::-webkit-scrollbar-thumb     { background: #10b981; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #06b6d4; }
+
+    /* ============================================================
+       Responsive 16:9 iframe wrapper
+    ============================================================ */
+    .iframe-wrapper {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+    }
+    .iframe-wrapper iframe {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      border: 0;
+    }
+
+    /* ============================================================
+       Subtle scan-line overlay for cyberpunk feel
+    ============================================================ */
+    .scanline::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 2px,
+        rgba(0,0,0,0.04) 2px,
+        rgba(0,0,0,0.04) 4px
+      );
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* Glow effect for active sidebar items */
+    .nav-active-glow {
+      box-shadow: inset 0 0 12px rgba(16,185,129,0.06);
+    }
+
+    /* Card hover lift */
+    .video-card {
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    .video-card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+    }
+
+    /* Modal backdrop animation */
+    #modal-overlay { animation: fadeIn 0.15s ease; }
+    #modal-box     { animation: slideUp 0.2s ease; }
+    @keyframes fadeIn  { from { opacity: 0 } to { opacity: 1 } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px) scale(0.97) } to { opacity: 1; transform: translateY(0) scale(1) } }
+
+    /* Toast slide-in */
+    .toast-enter { animation: toastIn 0.3s ease forwards; }
+    @keyframes toastIn { from { opacity: 0; transform: translateX(100%); } to { opacity: 1; transform: translateX(0); } }
+
+    /* Highlight pulse for moved card */
+    @keyframes highlightPulse {
+      0%   { box-shadow: 0 0 0 0 rgba(16,185,129,0.5); }
+      50%  { box-shadow: 0 0 0 6px rgba(16,185,129,0.15); }
+      100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); }
+    }
+    .highlight-pulse { animation: highlightPulse 0.7s ease; }
+  </style>
+</head>
+
+<body class="bg-slate-950 text-slate-100 font-sans flex h-screen overflow-hidden scanline">
+
+  <!-- ============================================================
+       SIDEBAR — Navegación de Herramientas
+  ============================================================ -->
+  <aside class="w-[17rem] min-w-[17rem] bg-slate-900 border-r border-slate-800 flex flex-col overflow-hidden shadow-2xl z-20">
+
+    <!-- Sidebar Header / Logo -->
+    <div class="px-5 py-4 border-b border-slate-800 flex items-center gap-3 bg-slate-950/60">
+      <div class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-900/40 flex-shrink-0">
+        <i class="fa-solid fa-shield-halved text-slate-950 text-base"></i>
+      </div>
+      <div class="min-w-0">
+        <p class="text-[10px] text-emerald-400 uppercase tracking-[0.2em] font-bold leading-none mb-0.5">CMS</p>
+        <h1 class="text-sm font-bold text-slate-100 leading-tight truncate">Manuales CiberSec</h1>
+      </div>
+    </div>
+
+    <!-- Storage badge -->
+    <div class="mx-4 mt-3 mb-1 flex items-center gap-2 px-3 py-1.5 bg-slate-800/60 rounded-lg border border-slate-700/60">
+      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse flex-shrink-0"></span>
+      <span class="text-[10px] text-slate-400 font-mono">localStorage · activo</span>
+    </div>
+
+    <!-- Navigation Label -->
+    <p class="text-[10px] text-slate-600 uppercase tracking-[0.18em] font-bold px-5 mt-4 mb-2">Herramientas</p>
+
+    <!-- Nav list -->
+    <nav class="flex-1 overflow-y-auto px-3 pb-4">
+      <ul id="tool-nav" class="space-y-0.5"></ul>
+    </nav>
+
+    <!-- Sidebar Footer -->
+    <div class="px-4 py-3 border-t border-slate-800 flex items-center gap-2">
+      <i class="fa-solid fa-lock text-slate-600 text-xs"></i>
+      <span class="text-[10px] text-slate-600 font-mono">v3.0 &mdash; Cybersec CMS</span>
+    </div>
+  </aside>
+
+  <!-- ============================================================
+       MAIN CONTENT — Manual Instructivo
+  ============================================================ -->
+  <main class="flex-1 flex flex-col overflow-hidden bg-slate-950">
+
+    <!-- Top Bar / Header -->
+    <header class="flex-shrink-0 bg-slate-900/90 backdrop-blur border-b border-slate-800 px-6 lg:px-8 py-3.5 flex items-center justify-between shadow-lg">
+      <div class="flex items-center gap-3 min-w-0">
+        <div id="header-icon-wrap" class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 bg-slate-800 border border-slate-700 transition-all duration-300">
+          <i id="header-tool-icon" class="fa-solid fa-book-open text-slate-400 text-sm"></i>
+        </div>
+        <div class="min-w-0">
+          <p class="text-[10px] text-slate-500 uppercase tracking-widest font-semibold leading-none mb-0.5">Manual Instructivo</p>
+          <h2 id="tool-title" class="text-base font-bold text-slate-100 truncate">Selecciona una herramienta</h2>
+        </div>
+      </div>
+      <div class="flex items-center gap-3 flex-shrink-0">
+        <div id="module-count-badge" class="hidden items-center gap-1.5 px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg">
+          <i class="fa-solid fa-film text-slate-500 text-xs"></i>
+          <span id="module-count-text" class="text-xs font-mono text-slate-400">0 módulos</span>
+        </div>
+        <button
+          id="btn-add-video"
+          class="hidden items-center gap-2 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400
+                 text-slate-950 font-bold px-4 py-2 rounded-xl text-sm transition-all duration-200
+                 shadow-lg shadow-emerald-900/30 active:scale-95 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+          onclick="openModal()"
+        >
+          <i class="fa-solid fa-circle-plus text-sm"></i>
+          <span>Añadir Módulo</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Scrollable Content Area -->
+    <div id="scroll-area" class="flex-1 overflow-y-auto">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- STATE: Welcome / No selection -->
+        <div id="welcome-state" class="flex flex-col items-center justify-center min-h-[70vh] text-center">
+          <div class="relative mb-8">
+            <div class="w-28 h-28 rounded-full bg-slate-900 border-2 border-slate-800 flex items-center justify-center">
+              <i class="fa-solid fa-shield-halved text-5xl text-emerald-500/70"></i>
+            </div>
+            <div class="absolute inset-0 rounded-full border-2 border-dashed border-emerald-500/20 animate-spin" style="animation-duration:12s;"></div>
+          </div>
+          <h3 class="text-2xl font-bold text-slate-200 mb-3">CMS de Manuales de Ciberseguridad</h3>
+          <p class="text-slate-500 max-w-md text-sm leading-relaxed mb-8">
+            Selecciona una herramienta del menú lateral para visualizar y administrar sus módulos de video instructivo.
+            Todos los datos se guardan automáticamente en tu navegador.
+          </p>
+          <div class="flex flex-wrap justify-center gap-4">
+            <div class="flex items-center gap-2 px-4 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-slate-400">
+              <i class="fa-solid fa-toolbox text-emerald-400"></i> 7 Herramientas
+            </div>
+            <div class="flex items-center gap-2 px-4 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-slate-400">
+              <i class="fa-solid fa-database text-cyan-400"></i> Persistencia Local
+            </div>
+            <div class="flex items-center gap-2 px-4 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-slate-400">
+              <i class="fa-brands fa-youtube text-red-400"></i> Soporte YouTube
+            </div>
+            <div class="flex items-center gap-2 px-4 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-slate-400">
+              <i class="fa-solid fa-arrows-up-down text-violet-400"></i> Reordenable
+            </div>
+          </div>
+        </div>
+
+        <!-- STATE: Tool has no videos -->
+        <div id="empty-tool-state" class="hidden flex-col items-center justify-center min-h-[55vh] text-center">
+          <div class="w-20 h-20 rounded-2xl bg-slate-900 border-2 border-dashed border-slate-700 flex items-center justify-center mb-5">
+            <i class="fa-solid fa-video-slash text-slate-600 text-2xl"></i>
+          </div>
+          <h3 class="text-lg font-semibold text-slate-300 mb-2">Sin módulos todavía</h3>
+          <p class="text-slate-500 text-sm max-w-xs leading-relaxed mb-5">
+            Esta herramienta no tiene videos registrados. Añade el primer módulo usando el botón en la barra superior.
+          </p>
+          <button
+            onclick="openModal()"
+            class="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-emerald-500/50
+                   text-slate-300 hover:text-emerald-400 font-semibold px-5 py-2.5 rounded-xl text-sm transition-all"
+          >
+            <i class="fa-solid fa-circle-plus"></i> Añadir primer módulo
+          </button>
+        </div>
+
+        <!-- STATE: Video list renders here -->
+        <div id="video-list" class="hidden space-y-5"></div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- ============================================================
+       MODAL — Formulario Añadir / Editar Módulo
+  ============================================================ -->
+  <div
+    id="modal-overlay"
+    class="hidden fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+    onclick="handleOverlayClick(event)"
+  >
+    <div id="modal-box" class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-lg shadow-[0_25px_80px_rgba(0,0,0,0.7)] overflow-hidden">
+      <div class="flex items-center justify-between px-6 py-4 bg-slate-800/80 border-b border-slate-700">
+        <div class="flex items-center gap-3">
+          <div id="modal-icon-wrap" class="w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center">
+            <i id="modal-icon" class="fa-solid fa-circle-plus text-emerald-400 text-sm"></i>
+          </div>
+          <h3 id="modal-title" class="text-base font-bold text-slate-100">Añadir Nuevo Módulo</h3>
+        </div>
+        <button
+          onclick="closeModal()"
+          class="w-7 h-7 rounded-lg bg-slate-700 hover:bg-slate-600 flex items-center justify-center transition-colors group"
+        >
+          <i class="fa-solid fa-xmark text-slate-400 group-hover:text-slate-200 text-sm"></i>
+        </button>
+      </div>
+      <form id="video-form" class="px-6 py-5 space-y-5" onsubmit="handleFormSubmit(event)" novalidate>
+        <input type="hidden" id="edit-index" value="-1" />
+        <div class="space-y-1.5">
+          <label class="flex items-center gap-1.5 text-[11px] text-emerald-400 uppercase tracking-widest font-bold">
+            <i class="fa-solid fa-heading"></i> Título del Módulo
+          </label>
+          <input
+            type="text" id="input-title" placeholder="Ej: Introducción al Panel de Control" required maxlength="120"
+            class="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-slate-100
+                   placeholder-slate-600 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+          />
+        </div>
+        <div class="space-y-1.5">
+          <label class="flex items-center gap-1.5 text-[11px] text-cyan-400 uppercase tracking-widest font-bold">
+            <i class="fa-brands fa-youtube"></i> URL de YouTube
+          </label>
+          <div class="relative">
+            <input
+              type="text" id="input-url" placeholder="https://www.youtube.com/watch?v=..." required
+              class="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 pr-10 text-sm text-slate-100
+                     placeholder-slate-600 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+              oninput="validateYouTubeUrl(this.value)"
+            />
+            <span id="url-valid-icon" class="hidden absolute right-3 top-1/2 -translate-y-1/2">
+              <i class="fa-solid fa-circle-check text-emerald-500 text-base"></i>
+            </span>
+          </div>
+          <p class="text-[11px] text-slate-600 leading-relaxed">
+            Acepta: <span class="text-slate-500 font-mono">youtube.com/watch?v=ID</span> · <span class="text-slate-500 font-mono">youtu.be/ID</span> · <span class="text-slate-500 font-mono">youtube.com/embed/ID</span>
+          </p>
+          <div id="url-preview" class="hidden flex items-center gap-3 px-3 py-2 bg-slate-800/80 border border-emerald-500/20 rounded-xl">
+            <i class="fa-solid fa-check-circle text-emerald-500 text-xs flex-shrink-0"></i>
+            <div>
+              <p class="text-[10px] text-slate-500 uppercase tracking-wider mb-0.5">ID detectado</p>
+              <code id="extracted-id" class="text-emerald-400 font-mono text-xs"></code>
+            </div>
+          </div>
+        </div>
+        <div class="space-y-1.5">
+          <label class="flex items-center gap-1.5 text-[11px] text-violet-400 uppercase tracking-widest font-bold">
+            <i class="fa-solid fa-align-left"></i> Descripción Detallada
+          </label>
+          <textarea
+            id="input-desc" rows="4" placeholder="Describe el contenido del módulo..." required
+            class="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-slate-100
+                   placeholder-slate-600 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all resize-none leading-relaxed"
+          ></textarea>
+        </div>
+        <div class="flex gap-3 pt-1">
+          <button type="button" onclick="closeModal()"
+            class="flex-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 font-semibold px-4 py-2.5 rounded-xl text-sm transition-all active:scale-95">
+            Cancelar
+          </button>
+          <button type="submit" id="btn-submit"
+            class="flex-1 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400
+                   text-slate-950 font-bold px-4 py-2.5 rounded-xl text-sm transition-all active:scale-95
+                   shadow-lg shadow-emerald-900/30 flex items-center justify-center gap-2">
+            <i id="submit-icon" class="fa-solid fa-circle-plus"></i>
+            <span id="submit-label">Agregar Módulo</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TOAST NOTIFICATION CONTAINER
+  ============================================================ -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-[60] flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- ============================================================
+       JAVASCRIPT — CMS Engine (Vanilla ES6+)
+  ============================================================ -->
+  <!-- YouTube IFrame Player API — carga el player oficial y permite detectar errores (153 = embebido deshabilitado) -->
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <script>
+    'use strict';
+
+    // ===========================================================
+    // ██████  MODELO DE DATOS — Estructura & localStorage
+    // ===========================================================
+
+    const STORAGE_KEY = 'cms_cybersec_v3';
+
+    /**
+     * Datos iniciales: 7 herramientas de ciberseguridad.
+     * Cada herramienta contiene 12 videos reales de YouTube investigados
+     * de canales oficiales, playlists educativas y tutoriales técnicos.
+     */
+    const DEFAULT_DATA = {
+      tools: [
+        /* ====================================================
+           1. CYLANCE — BlackBerry CylancePROTECT / CylanceOPTICS
+           ==================================================== */
+        {
+          id: 'cylance',
+          name: 'Cylance',
+          icon: 'fa-solid fa-robot',
+          color: 'emerald',
+          videos: [
+            {
+              title: 'CylancePROTECT — Demo & Deep Dive Completo',
+              description: 'Demostración exhaustiva de CylancePROTECT mostrando cómo el motor de IA analiza el ADN matemático de ejecutables para predecir y bloquear malware sin firmas. Se cubre la arquitectura del agente, el modelo de Machine Learning, y la consola de administración en la nube.',
+              youtubeId: 'EhClY7Vx9QQ',
+            },
+            {
+              title: 'CylancePROTECT — La Demo Oficial',
+              description: 'Demo oficial guiada paso a paso del producto CylancePROTECT, destacando el flujo de detección predictiva, la instalación del agente ligero, y las métricas de protección en tiempo real versus amenazas de día cero y ransomware avanzado.',
+              youtubeId: 'lyWTVN4XKa0',
+            },
+            {
+              title: '¿Qué es CylancePROTECT? — Visión General',
+              description: 'Video introductorio que explica los fundamentos de CylancePROTECT: la diferencia entre seguridad basada en firmas (antivirus tradicional) y la seguridad predictiva basada en modelos de Machine Learning, ventaja competitiva clave de Cylance en el ecosistema EDR/EPP.',
+              youtubeId: '-nRoALZZmQU',
+            },
+            {
+              title: 'BlackBerry Cylance — Prevención Inteligente con IA',
+              description: 'Explicación del enfoque de BlackBerry Cylance para la prevención de amenazas utilizando inteligencia artificial: cómo se entrenan los modelos, qué características extraen de los binarios, y por qué el enfoque predictivo supera al reactivo en escenarios de ataques modernos.',
+              youtubeId: '8guJl16nF6M',
+            },
+            {
+              title: 'Recorrido Técnico por la Consola de CylancePROTECT',
+              description: 'Walkthrough técnico guiado por un ingeniero de producto recorriendo la consola de administración de CylancePROTECT desde la perspectiva del endpoint: gestión de políticas, dashboard de amenazas, cuarentena, exclusiones y configuración de alertas.',
+              youtubeId: 'QgqSWPCDF-s',
+            },
+            {
+              title: 'CylancePROTECT vs. Ransomware — Demostración Práctica',
+              description: 'Demostración en vivo de cómo CylancePROTECT detecta y bloquea ransomware activo antes de su ejecución. Se muestra la comparativa entre un sistema desprotegido que es cifrado por completo versus un endpoint con el agente de Cylance activo que neutraliza la amenaza.',
+              youtubeId: 'RkbB8pV09E8',
+            },
+            {
+              title: 'CylancePROTECT — Novedades y Actualizaciones',
+              description: 'Revisión de las nuevas funcionalidades y mejoras introducidas en CylancePROTECT, incluyendo optimizaciones del modelo de IA, mejoras en rendimiento del agente, nuevas capacidades de control de scripts y memory protection.',
+              youtubeId: 'GGHbURm_C1w',
+            },
+            {
+              title: 'CylanceOPTICS 2.4 — EDR de Próxima Generación',
+              description: 'Webinar técnico sobre CylanceOPTICS 2.4, la solución EDR de BlackBerry. Se explican las capacidades de detección y respuesta extendida, las reglas de detección personalizadas, la recolección de evidencia forense y la integración con CylancePROTECT.',
+              youtubeId: 'v8AMn7MWJMA',
+            },
+            {
+              title: 'BlackBerry Cylance — Protección para Entornos OT e IoT',
+              description: 'Demostración de cómo la tecnología Cylance protege entornos de tecnología operacional (OT) y manufactura, incluyendo sistemas air-gapped y dispositivos IoT industriales que no pueden ejecutar antivirus tradicional.',
+              youtubeId: 'chI8KB5rH8U',
+            },
+            {
+              title: 'Instalación y Despliegue de CylancePROTECT',
+              description: 'Guía práctica de instalación y despliegue del agente CylancePROTECT en entornos empresariales: descarga del paquete, configuración de tokens de instalación, asignación de políticas y verificación del registro en la consola central.',
+              youtubeId: '0XDQEY6ftSY',
+            },
+            {
+              title: 'Cylance Bloquea DoppelPaymer, BitPaymer & Dridex',
+              description: 'Análisis técnico y demostración de cómo CylancePROTECT neutraliza familias de malware críticas: DoppelPaymer (ransomware), BitPaymer (ransomware dirigido) y Dridex (troyano bancario). Cada muestra es ejecutada en un entorno controlado para validar la detección predictiva.',
+              youtubeId: '5H2s7wRAc0Y',
+            },
+            {
+              title: 'BlackBerry Cylance — Seguridad en Entornos Desconectados',
+              description: 'Presentación sobre la capacidad de CylancePROTECT para proteger endpoints sin conexión a internet. Se explica cómo el modelo local de IA opera sin necesidad de actualizaciones de firmas ni conectividad cloud, ideal para redes clasificadas y SCADA.',
+              youtubeId: '4JqwanmmT9Y',
+            },
+          ],
+        },
+
+        /* ====================================================
+           2. TREND MICRO DEEP SECURITY
+           Fuente: Playlist "Technical Spark" (30 videos)
+           ==================================================== */
+        {
+          id: 'trend-micro',
+          name: 'Trend Micro Deep Security',
+          icon: 'fa-solid fa-layer-group',
+          color: 'cyan',
+          videos: [
+            {
+              title: 'Introducción a Trend Micro Deep Security',
+              description: 'Primer módulo del curso completo. Introduce la plataforma Deep Security: arquitectura general, componentes (Manager, Agent, Relay, Virtual Appliance), casos de uso para protección de servidores físicos, virtuales y en la nube, y el valor de la seguridad multicapa.',
+              youtubeId: 'OtKvGcyAATI',
+            },
+            {
+              title: 'Preparación del Servidor para la Instalación del Manager',
+              description: 'Guía de prerrequisitos: preparación del sistema operativo, requisitos de hardware y software, configuración de base de datos (SQL Server/PostgreSQL), apertura de puertos de red necesarios y consideraciones de seguridad previas a la instalación.',
+              youtubeId: 'Gi9Vh-9qqc8',
+            },
+            {
+              title: 'Descarga del Setup y Licencia Trial del Manager',
+              description: 'Paso a paso para obtener el instalador de Deep Security Manager desde el portal de Trend Micro y activar una licencia de evaluación. Incluye la navegación por el portal de soporte, selección de la versión correcta y verificación de la descarga.',
+              youtubeId: 'XJoQwsimFlM',
+            },
+            {
+              title: 'Instalación Paso a Paso del Deep Security Manager',
+              description: 'Tutorial detallado de la instalación completa del Deep Security Manager: ejecución del wizard, configuración de la base de datos, definición de credenciales de administrador, configuración del hostname y verificación del acceso a la consola web.',
+              youtubeId: 'qIvuNrM4-Iw',
+            },
+            {
+              title: 'Activación y Renovación de Licencia del Manager',
+              description: 'Cómo activar una nueva licencia en Deep Security Manager, verificar el estado de licenciamiento, renovar licencias expiradas y entender las diferencias entre los niveles de licencia (módulos disponibles por tipo de licencia).',
+              youtubeId: '9JqeECN6Y6I',
+            },
+            {
+              title: 'Instalación Multi-Nodo del Deep Security Manager',
+              description: 'Configuración de alta disponibilidad con múltiples nodos del Manager: instalación del segundo nodo, configuración del load balancer, sincronización de base de datos compartida, y failover automático para garantizar continuidad del servicio.',
+              youtubeId: 'fd2HQGhoU7Q',
+            },
+            {
+              title: 'Configuración Multi-Tenant del Manager',
+              description: 'Habilitación y configuración del modo multi-tenant en Deep Security Manager para proveedores de servicios gestionados (MSSP): creación de tenants, asignación de recursos, aislamiento de políticas y gestión centralizada de múltiples clientes.',
+              youtubeId: 'HBLgL_UEo5c',
+            },
+            {
+              title: 'Instalación del Agente en Windows Server',
+              description: 'Instalación completa del Deep Security Agent en Windows Server: descarga del paquete desde el Manager, instalación silenciosa vía línea de comandos, activación del agente, asignación de política y verificación de la comunicación bidireccional.',
+              youtubeId: 'R1AtSaW9UlI',
+            },
+            {
+              title: 'Configuración del Relay Server',
+              description: 'Configuración y propósito del Relay Server en la arquitectura Deep Security: distribución eficiente de actualizaciones de seguridad (patrones antimalware, reglas IPS), reducción del consumo de ancho de banda y gestión de múltiples relays.',
+              youtubeId: 'WwOfMWpzL5Q',
+            },
+            {
+              title: 'Configuración de Smart Folders en el Manager',
+              description: 'Uso de Smart Folders para organizar dinámicamente los endpoints protegidos: creación de filtros basados en propiedades del agente (SO, grupo, etiquetas, estado de protección), facilitando la gestión de infraestructuras grandes y complejas.',
+              youtubeId: 'zC065mbsuMQ',
+            },
+            {
+              title: 'Actualización del Agente en Windows Server',
+              description: 'Procedimiento de actualización del Deep Security Agent en servidores Windows: verificación de la versión actual, planificación del upgrade (manual vs. programado), ejecución de la actualización desde la consola central y validación post-upgrade.',
+              youtubeId: '0ieLN0BpHWc',
+            },
+            {
+              title: 'Instalación del Agente en Linux Server',
+              description: 'Instalación del Deep Security Agent en distribuciones Linux (RHEL, CentOS, Ubuntu): descarga del paquete RPM/DEB, instalación vía terminal, activación y asignación de política, verificación de módulos de protección activos (Antimalware, IPS, Firewall).',
+              youtubeId: 'XI1a-TX4Cy0',
+            },
+          ],
+        },
+
+        /* ====================================================
+           3. MICROSOFT DEFENDER FOR ENDPOINT
+           Fuentes: Virtual Ninja Training + CyberPlatter MDE Series
+           ==================================================== */
+        {
+          id: 'ms-defender',
+          name: 'Microsoft Defender for Endpoint',
+          icon: 'fa-brands fa-windows',
+          color: 'blue',
+          videos: [
+            {
+              title: 'Conociendo Microsoft Defender for Endpoint — Ninja Training',
+              description: 'Primer episodio de la serie Virtual Ninja Training de Microsoft. Introduce MDE: qué es, cuáles son sus pilares fundamentales (Threat & Vulnerability Management, Attack Surface Reduction, Next-Gen Protection, EDR, Auto Investigation) y cómo encaja en el ecosistema Microsoft 365 Defender.',
+              youtubeId: 'LRFdd4GCZ-Y',
+            },
+            {
+              title: 'Primeros Pasos con MDE — Ninja Training',
+              description: 'Cómo empezar con Microsoft Defender for Endpoint: configuración inicial del portal de seguridad, requisitos de licenciamiento (E5, P2, standalone), habilitación de funciones básicas y navegación por el dashboard principal del Security Center.',
+              youtubeId: '46nJFzvG11s',
+            },
+            {
+              title: 'Threat and Vulnerability Management — Ninja Training',
+              description: 'Deep dive en el módulo TVM de MDE: descubrimiento y evaluación de vulnerabilidades en tiempo real, priorización basada en contexto de amenazas activas, recomendaciones de seguridad y seguimiento del score de exposición organizacional.',
+              youtubeId: 'mt6GcC9Qbhw',
+            },
+            {
+              title: 'Attack Surface Reduction — Ninja Training',
+              description: 'Explicación completa de las reglas de reducción de superficie de ataque (ASR): configuración de reglas en modo auditoría y bloqueo, protección contra exploits, control de aplicaciones, aislamiento de hardware y protección de red.',
+              youtubeId: '-5pfXrSF1rI',
+            },
+            {
+              title: 'Next-Generation Protection — Ninja Training',
+              description: 'Módulo de protección de próxima generación: Microsoft Defender Antivirus integrado con cloud protection, protección en tiempo real, heurísticas avanzadas, machine learning en la nube y protección contra PUAs (Potentially Unwanted Applications).',
+              youtubeId: 'fou9cEqriH8',
+            },
+            {
+              title: 'Automated Investigation and Response (AIR) — Ninja Training',
+              description: 'Funcionamiento del sistema de investigación y respuesta automatizada de MDE: cómo se disparan investigaciones automáticas, el flujo de decisión de la IA, acciones de remediación automática (cuarentena, aislamiento, rollback) y la cola de aprobaciones pendientes.',
+              youtubeId: 'lu5G-VbELyg',
+            },
+            {
+              title: '¿Qué es Microsoft Defender XDR? — Visión General',
+              description: 'Introducción al ecosistema extendido: qué es XDR (Extended Detection and Response), cómo Microsoft 365 Defender unifica la protección de endpoints, identidades, correo electrónico y aplicaciones en la nube en una experiencia integrada de detección y respuesta.',
+              youtubeId: 'YRi7lvuUf6Y',
+            },
+            {
+              title: 'MDE: Onboarding de Clientes vía Script Local',
+              description: 'Tutorial práctico de CyberPlatter: procedimiento paso a paso para incorporar dispositivos a Microsoft Defender for Endpoint utilizando el script de onboarding local, verificación de la conexión con el servicio cloud y validación en el portal de seguridad.',
+              youtubeId: 'R9EbyqQ_xFk',
+            },
+            {
+              title: 'MDE: Onboarding Masivo vía Microsoft Intune',
+              description: 'Cómo onboardear dispositivos a MDE de forma masiva usando Microsoft Intune: creación de perfiles de configuración, asignación a grupos de dispositivos, monitoreo del estado de onboarding y troubleshooting de errores comunes.',
+              youtubeId: '1zr1haK2khU',
+            },
+            {
+              title: 'MDE: Device Discovery — Identificar Dispositivos No Gestionados',
+              description: 'Funcionalidad de descubrimiento de dispositivos: cómo MDE identifica automáticamente dispositivos no gestionados en la red (impresoras, IoT, servidores sin agente), evaluación de riesgo de dispositivos descubiertos y recomendaciones de onboarding.',
+              youtubeId: 'yYNsetd5wXk',
+            },
+            {
+              title: 'MDE: Testing con EICAR — Validar tu Antivirus',
+              description: 'Cómo utilizar el archivo de prueba EICAR para validar que Microsoft Defender Antivirus está funcionando correctamente: descarga del archivo de prueba, verificación de la detección, interpretación de alertas y confirmación en el portal de seguridad.',
+              youtubeId: 'i7oo7VeWVUs',
+            },
+            {
+              title: 'MDE: Live Response — Investigación Remota en Vivo',
+              description: 'Uso de la funcionalidad Live Response en MDE para conectarse remotamente a un endpoint comprometido: ejecución de comandos forenses, recolección de evidencia, análisis de procesos en memoria, extracción de archivos y scripts de investigación.',
+              youtubeId: 'g0dyF9G1-XY',
+            },
+          ],
+        },
+
+        /* ====================================================
+           4. CYMULATE — Breach & Attack Simulation Platform
+           Fuente: Canal oficial Cymulate + webinars públicos
+           ==================================================== */
+        {
+          id: 'cymulate',
+          name: 'Cymulate',
+          icon: 'fa-solid fa-crosshairs',
+          color: 'violet',
+          videos: [
+            {
+              title: 'Breach and Attack Simulation — Simplificado',
+              description: 'Webinar introductorio de Cymulate que explica el concepto de Breach and Attack Simulation (BAS): por qué las organizaciones necesitan validar continuamente sus controles de seguridad, cómo funciona la simulación automatizada y qué resultados esperar de una primera evaluación.',
+              youtubeId: 'FXmiDs29Bm0',
+            },
+            {
+              title: 'Plataforma Cymulate — Visión General en 3 Minutos',
+              description: 'Resumen ejecutivo de la plataforma SaaS de Cymulate: arquitectura basada en la nube, despliegue del agente ligero, simulación con un solo clic, identificación de brechas de seguridad y generación automática de reportes con métricas accionables para equipos de seguridad.',
+              youtubeId: '4ghr-82Yzzc',
+            },
+            {
+              title: 'Validación de Controles de Seguridad con Cymulate',
+              description: 'Deep dive técnico en la validación de controles: cómo Cymulate prueba capas de seguridad individuales (Email Gateway, Web Gateway, WAF, Endpoint, DLP) usando TTPs del framework MITRE ATT&CK mapeados a amenazas reales en producción.',
+              youtubeId: 'BIe4ffgUcik',
+            },
+            {
+              title: 'Plataforma de Validación de Seguridad — Demo Completa',
+              description: 'Demostración completa de la plataforma: desde el login hasta la ejecución de una simulación integral. Se muestra cómo configurar escenarios de ataque, ejecutar pruebas contra el stack de seguridad y analizar los resultados con el dashboard interactivo.',
+              youtubeId: 'GNx_UQc-XAY',
+            },
+            {
+              title: 'Cymulate — Overview del Producto BAS',
+              description: 'Presentación del producto enfocada en equipos de seguridad operacional: workflow completo de validación, integración con SIEMs y plataformas SOAR, automatización de campañas de prueba recurrentes y medición continua de la postura de seguridad.',
+              youtubeId: 'iq5kOKtaiK0',
+            },
+            {
+              title: 'Caso de Éxito — Telit Valida su Seguridad con Cymulate',
+              description: 'Caso práctico de la empresa Telit utilizando Cymulate para validar la eficacia de sus controles de seguridad en múltiples oficinas geográficamente distribuidas. Se muestra cómo identificaron y remediaron brechas específicas en su infraestructura global.',
+              youtubeId: '1NwOeNTCbHg',
+            },
+            {
+              title: 'Webinar — La Esperanza No Es una Estrategia de Seguridad',
+              description: 'Webinar educativo sobre por qué confiar ciegamente en los controles de seguridad es insuficiente. Se presenta el enfoque de validación continua como metodología para pasar de una postura de seguridad asumida a una postura de seguridad probada y medible.',
+              youtubeId: 'b7bKIxEmdeQ',
+            },
+            {
+              title: 'Validación Continua contra Amenazas Emergentes',
+              description: 'Demo del Product Manager de Cymulate mostrando cómo los equipos SecOps pueden validar su protección contra amenazas recién descubiertas dentro de las 24 horas de su aparición, utilizando el feed de threat intelligence integrado en la plataforma.',
+              youtubeId: 'qGko9ygPycg',
+            },
+            {
+              title: 'BAS para Red Team y Blue Team — Serie Educativa',
+              description: 'Explicación de cómo tanto los Red Teams como los Blue Teams se benefician de las herramientas BAS: los Red Teams las usan para descubrir vectores de ataque reales, mientras los Blue Teams las usan para validar detecciones, reglas y playbooks de respuesta.',
+              youtubeId: 'ie_X4Mxna9g',
+            },
+            {
+              title: 'Cymulate — Validación de Exposición Real',
+              description: 'Módulo de Exposure Validation que permite probar la explotabilidad real de vulnerabilidades en el entorno específico de la organización, yendo más allá de scores CVSS genéricos para determinar qué vulnerabilidades representan riesgo real de compromiso.',
+              youtubeId: 'ggHw2beNFrA',
+            },
+            {
+              title: 'Puntuación de Exposición Real vs. CVSS Genérico',
+              description: 'Explicación de cómo Cymulate calcula un score de riesgo contextualizado para cada organización, combinando la criticidad de la vulnerabilidad con la efectividad real de los controles compensatorios, produciendo prioridades de remediación más inteligentes.',
+              youtubeId: 'EFgQK_uXEuM',
+            },
+            {
+              title: 'Integración Cymulate + Microsoft Defender for Endpoint',
+              description: 'Demostración técnica de la integración entre Cymulate y MDE: cómo la plataforma BAS ejecuta simulaciones que validan las capacidades de detección y respuesta de Microsoft Defender, generando recomendaciones específicas para optimizar las políticas del EDR.',
+              youtubeId: '7zLMxjULeUw',
+            },
+          ],
+        },
+
+        /* ====================================================
+           5. BEYONDTRUST — Privileged Access Management (PAM)
+           Fuente: Playlists oficiales de BeyondTrust + Technology Videos
+           ==================================================== */
+        {
+          id: 'beyondtrust',
+          name: 'BeyondTrust',
+          icon: 'fa-solid fa-user-shield',
+          color: 'orange',
+          videos: [
+            {
+              title: 'BeyondTrust — Overview de la Plataforma PAM',
+              description: 'Visión general de la plataforma completa de BeyondTrust para Privileged Access Management: gestión de accesos privilegiados, control de sesiones remotas, bóveda de contraseñas, y cómo la solución protege contra el robo de credenciales y el abuso de privilegios.',
+              youtubeId: 'Op160oSysaI',
+            },
+            {
+              title: 'BeyondTrust — Guía Completa para Principiantes',
+              description: 'Demo comprehensiva diseñada como guía de aprendizaje para nuevos usuarios de BeyondTrust: navegación por la interfaz, conceptos fundamentales de PAM, configuración inicial, y mejores prácticas para la implementación del principio de mínimo privilegio.',
+              youtubeId: 'pW5wUnhnhCc',
+            },
+            {
+              title: 'BeyondTrust PRA — Gestión de Contraseñas vs. Microsoft LAPS',
+              description: 'Comparativa técnica entre la gestión de contraseñas privilegiadas de BeyondTrust (Remote Support/PRA) y Microsoft LAPS: alcance de cada solución, escenarios de uso, limitaciones de LAPS para entornos enterprise y valor agregado de una bóveda PAM.',
+              youtubeId: 'LUJ7AI_1jc8',
+            },
+            {
+              title: 'BeyondTrust PRA — Forensia de Sesiones',
+              description: 'Demostración de la funcionalidad de Session Forensics en Privileged Remote Access: grabación completa de sesiones privilegiadas, búsqueda por comandos ejecutados, timeline interactivo, reproducción de sesiones para auditoría y cumplimiento regulatorio.',
+              youtubeId: '5Nfo8-OyKs0',
+            },
+            {
+              title: 'BeyondTrust PRA — Demo de Protocol Tunneling',
+              description: 'Explicación y demostración del tunneling de protocolos en PRA: cómo crear túneles seguros para RDP, SSH, VNC y otros protocolos sin exponer puertos directamente a internet, reduciendo drásticamente la superficie de ataque de la infraestructura.',
+              youtubeId: 'SjQEwmGKR0A',
+            },
+            {
+              title: 'Integración PRA + Password Safe — Introducción',
+              description: 'Primera parte de la serie de integración entre Privileged Remote Access y Password Safe: conceptos de la arquitectura integrada, flujo de credenciales desde la bóveda hacia las sesiones remotas y beneficios de la solución unificada para equipos de operaciones.',
+              youtubeId: 'ZfvLB3SaOTE',
+            },
+            {
+              title: 'Integración PRA + Password Safe — Demo en Vivo',
+              description: 'Segunda parte: demostración práctica de la integración PRA + Password Safe. Se muestra cómo un operador inicia una sesión privilegiada donde las credenciales se inyectan automáticamente desde la bóveda sin que el usuario las conozca ni las vea.',
+              youtubeId: 'jXMNYDT2P40',
+            },
+            {
+              title: 'Integración PRA + Password Safe — Demo de Integración',
+              description: 'Tercera parte: demostración avanzada del flujo de integración completo incluyendo rotación automática de contraseñas post-sesión, registro de auditoría unificado y configuración de políticas de acceso basadas en tiempo y rol.',
+              youtubeId: 'ThMjC3Xe7iI',
+            },
+            {
+              title: 'Integración PRA + Password Safe — BI Integrated ECM',
+              description: 'Cuarta parte: Enterprise Credential Management integrado con Business Intelligence. Se explica cómo extraer métricas de uso de credenciales privilegiadas, generar dashboards de cumplimiento y alimentar procesos de gobierno de identidades.',
+              youtubeId: '1AgQAChOZqc',
+            },
+            {
+              title: 'Integración PRA + Password Safe — Standalone ECM',
+              description: 'Quinta parte: modo standalone del Enterprise Credential Manager. Configuración independiente del ECM cuando Password Safe no está disponible, gestión local de credenciales privilegiadas, y escenarios de despliegue para organizaciones más pequeñas.',
+              youtubeId: 'Y2myzGQC-TE',
+            },
+            {
+              title: 'Endpoint Privilege Management para Windows y Mac',
+              description: 'Demostración de BeyondTrust Endpoint Privilege Management: cómo eliminar derechos de administrador local de los usuarios finales sin afectar la productividad, elevación de privilegios just-in-time, y prevención de ransomware mediante el principio de mínimo privilegio.',
+              youtubeId: '3vpws9eTXT0',
+            },
+            {
+              title: 'Paths to Privileges — Campo de Batalla de la Ciberseguridad',
+              description: 'Presentación sobre los vectores de ataque más comunes que explotan privilegios excesivos: escalación de privilegios, movimiento lateral, pass-the-hash, kerberoasting, y cómo una estrategia PAM integral mitiga cada uno de estos vectores de amenaza.',
+              youtubeId: 'EAQjJs8q4g4',
+            },
+          ],
+        },
+
+        /* ====================================================
+           6. SPLUNK — SIEM & Security Analytics
+           Fuente: Playlist "Splunk SIEM Training" Motasem Hamdan
+           ==================================================== */
+        {
+          id: 'splunk',
+          name: 'Splunk',
+          icon: 'fa-solid fa-chart-line',
+          color: 'yellow',
+          videos: [
+            {
+              title: 'Investigando Ransomware Cerber con Splunk',
+              description: 'Módulo práctico utilizando el escenario Boss of the SOC (BOTS) de TryHackMe. Se investiga un incidente de ransomware Cerber: análisis de logs de red, identificación del vector de entrada, correlación de eventos en Splunk y reconstrucción de la cadena de ataque completa.',
+              youtubeId: '4Jau-Wj-mkE',
+            },
+            {
+              title: 'Cómo Cazar Hackers con Splunk — BOTS V1',
+              description: 'Ejercicio de threat hunting en Splunk usando el dataset BOTS V1: técnicas de búsqueda proactiva, detección de actividad de reconocimiento, identificación de movimiento lateral, búsqueda de indicadores de compromiso (IOCs) y creación de alertas de detección.',
+              youtubeId: '4gV4RLoDhQ0',
+            },
+            {
+              title: 'Introducción a Splunk para Ciberseguridad — Splunk 101',
+              description: 'Curso introductorio completo: qué es un SIEM, arquitectura de Splunk (Indexer, Forwarder, Search Head), instalación del entorno de laboratorio, primera ingesta de datos, sintaxis básica de SPL (Search Processing Language) y creación del primer dashboard.',
+              youtubeId: 'gmQrOGqlz4A',
+            },
+            {
+              title: 'Investigación Web con Splunk — BOTS V2',
+              description: 'Análisis de ataques web usando Splunk: investigación de tráfico HTTP sospechoso, detección de SQL injection y XSS, análisis de logs de servidores web, identificación de escaneos automatizados y correlación con datos de WAF.',
+              youtubeId: '47EqASFbnHY',
+            },
+            {
+              title: 'Detectar Ataques a Aplicaciones Web con Splunk',
+              description: 'Módulo avanzado de detección de ataques a aplicaciones web: creación de queries SPL para identificar patrones de ataque (brute force, directory traversal, command injection), uso de lookups para enriquecer datos y construction de alertas correladas.',
+              youtubeId: 'EYdUp_EEGlY',
+            },
+            {
+              title: 'Investigación de Ataques USB con Splunk — BOTS V2',
+              description: 'Análisis forense de incidentes relacionados con dispositivos USB: detección de conexiones no autorizadas, exfiltración de datos vía USB, correlación de eventos Sysmon con logs de Splunk, e identificación del usuario y equipo comprometido.',
+              youtubeId: 'EEq9H0LWuxc',
+            },
+            {
+              title: 'Investigación FTP con Splunk — BOTS V2',
+              description: 'Análisis de tráfico FTP sospechoso en Splunk: identificación de transferencias de archivos no autorizadas, detección de exfiltración de datos, análisis de credenciales comprometidas y reconstrucción de la timeline del incidente.',
+              youtubeId: 'QlUq9TaM_fM',
+            },
+            {
+              title: 'Investigar Eventos de AWS Cloud con Splunk',
+              description: 'Monitoreo de seguridad en Amazon Web Services: ingesta de CloudTrail logs en Splunk, detección de actividad sospechosa en la consola AWS, identificación de cambios de configuración no autorizados y alertas para escalación de privilegios en la nube.',
+              youtubeId: '7Mw3vRI2A9g',
+            },
+            {
+              title: 'Investigación de Crypto Miners con Splunk',
+              description: 'Detección de minería de criptomonedas no autorizada: identificación de procesos de crypto mining, análisis de consumo anormal de CPU, búsqueda de conexiones a mining pools, correlación de IOCs y respuesta ante el compromiso de recursos.',
+              youtubeId: 'VdDBASC2HvM',
+            },
+            {
+              title: 'Investigar Autenticación en AWS con Splunk',
+              description: 'Análisis de eventos de autenticación en AWS: detección de intentos de login fallidos, identificación de accesos desde ubicaciones inusuales, monitoreo de uso de API keys, y alertas para actividad de IAM sospechosa usando búsquedas en Splunk.',
+              youtubeId: '-M7WTmsMMgA',
+            },
+            {
+              title: 'Investigar Macros Maliciosas de Office con Splunk',
+              description: 'Análisis de incidentes de malware basado en macros de Microsoft Office: detección de ejecución de macros sospechosas, análisis de procesos hijo (PowerShell, CMD) lanzados desde aplicaciones Office, y correlación con eventos de red para detectar C2.',
+              youtubeId: 'gjZfvmL5Vrs',
+            },
+            {
+              title: 'Investigar Máquinas Comprometidas con Splunk',
+              description: 'Módulo de investigación forense en Splunk: análisis de endpoints comprometidos usando logs de Sysmon, identificación de persistencia, detección de herramientas de ataque (Mimikatz, PsExec), y documentación de la cadena de custodia digital.',
+              youtubeId: 'ePg5lahO1y4',
+            },
+          ],
+        },
+
+        /* ====================================================
+           7. DARKTRACE — AI-Powered Cybersecurity
+           Fuentes: Canal oficial Darktrace + demos de partners
+           ==================================================== */
+        {
+          id: 'darktrace',
+          name: 'Darktrace',
+          icon: 'fa-solid fa-brain',
+          color: 'pink',
+          videos: [
+            {
+              title: 'Darktrace — La Plataforma de IA para Ciberseguridad',
+              description: 'Presentación oficial de la plataforma Darktrace: cómo la tecnología de Self-Learning AI aprende el comportamiento normal de cada usuario, dispositivo y red para detectar amenazas emergentes y sofisticadas sin depender de firmas o reglas predefinidas.',
+              youtubeId: 'mCjtz0KylNo',
+            },
+            {
+              title: 'Darktrace — Demostración de Detección de Amenazas',
+              description: 'Demo en vivo mostrando cómo Darktrace detecta amenazas en tiempo real: visualización de anomalías de red, alertas de comportamiento inusual, análisis de dispositivos comprometidos y generación automática de informes de incidentes por la IA.',
+              youtubeId: 'qHaRxjPBuhw',
+            },
+            {
+              title: 'Darktrace — IA de Auto-Aprendizaje en Acción',
+              description: 'Explicación profunda del motor de Self-Learning AI de Darktrace: algoritmos no supervisados que construyen un "patrón de vida" para cada entidad de la red, detección de micro-desviaciones y respuesta autónoma proporcional a la gravedad de la amenaza.',
+              youtubeId: 'fLC-x7DoLOo',
+            },
+            {
+              title: 'Darktrace — Detección Autónoma de Ataques Avanzados',
+              description: 'Casos de uso de detección de amenazas avanzadas: APTs (Advanced Persistent Threats), insider threats, exfiltración de datos lenta, ataques de cadena de suministro y cómo la IA de Darktrace los identifica cuando las herramientas tradicionales fallan.',
+              youtubeId: 'frL0Av2Rg10',
+            },
+            {
+              title: 'Darktrace Threat Visualizer — Demo del Interfaz',
+              description: 'Recorrido completo por el Threat Visualizer de Darktrace: la interfaz interactiva 3D que permite a los analistas explorar la topología de red, investigar conexiones sospechosas, hacer drill-down en dispositivos comprometidos y visualizar la cadena de ataque.',
+              youtubeId: 'QG9GtuKMPnk',
+            },
+            {
+              title: 'Darktrace RESPOND (Antigena) — Respuesta Autónoma',
+              description: 'Explicación de Darktrace RESPOND (antes Antigena): cómo el sistema toma acciones de contención automáticas y proporcionales contra amenazas activas, desde ralentizar conexiones sospechosas hasta aislar completamente dispositivos comprometidos.',
+              youtubeId: '6sRKuc593q8',
+            },
+            {
+              title: 'Darktrace Cyber AI Analyst — Investigación Automatizada',
+              description: 'Presentación del Cyber AI Analyst: la IA que automatiza el trabajo de un analista SOC Tier 1-2. Triaje automático de alertas, investigación contextual de incidentes, generación de reportes en lenguaje natural y reducción drástica del tiempo de respuesta.',
+              youtubeId: 'Y0eLSRIFgFU',
+            },
+            {
+              title: 'Darktrace — Cómo la IA Combate la Fatiga de Alertas',
+              description: 'Webinar sobre uno de los mayores desafíos de los SOC: la fatiga de alertas. Se muestra cómo el Cyber AI Analyst de Darktrace reduce el ruido un 92%, priorizando solo los incidentes genuinos que requieren intervención humana.',
+              youtubeId: 'UQ53GPzOSpE',
+            },
+            {
+              title: 'Darktrace/NETWORK — Detección de Amenazas en Red',
+              description: 'Deep dive en el módulo Darktrace/NETWORK: monitorización de tráfico este-oeste y norte-sur, detección de movimiento lateral, identificación de comunicaciones C2, análisis de DNS sospechoso y protección para entornos de red empresariales complejos.',
+              youtubeId: 'R4lBF9Sw02w',
+            },
+            {
+              title: 'Darktrace — Workshop de Ciberseguridad con IA',
+              description: 'Workshop práctico de Darktrace con un partner de ciberseguridad: recorrido guiado por las capacidades de la plataforma, ejercicios de detección de amenazas, análisis de escenarios de ataque reales y mejores prácticas para la operación diaria del SOC.',
+              youtubeId: 'KDaxXZy8UME',
+            },
+            {
+              title: 'Darktrace — Cómo Funciona la Detección y Respuesta',
+              description: 'Explicación técnica del pipeline completo de Darktrace: ingesta de datos (packet capture, logs, APIs cloud), procesamiento por el motor de IA, generación de modelos de comportamiento, detección de anomalías, y disparo de acciones autónomas de respuesta.',
+              youtubeId: 'YazwssanQOI',
+            },
+            {
+              title: 'Darktrace — IA para Seguridad en Sistemas OT/ICS',
+              description: 'Aplicación de Darktrace en entornos de tecnología operacional e ICS (Industrial Control Systems): visibilidad en protocolos industriales (Modbus, BACnet, SCADA), detección de amenazas en redes convergentes IT/OT y protección de infraestructura crítica.',
+              youtubeId: 'AZUH01JS3ls',
+            },
+          ],
+        },
+      ],
+    };
+
+    // ===========================================================
+    // ██████  MAPA DE ESTILOS TAILWIND POR COLOR
+    // ===========================================================
+
+    const COLOR_MAP = {
+      emerald: {
+        badge: 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30',
+        icon: 'text-emerald-400', iconBg: 'bg-emerald-500/15 border-emerald-500/30',
+        navActive: 'bg-slate-800 ring-1 ring-emerald-500/30 shadow-inner shadow-emerald-900/20',
+        navDot: 'bg-emerald-500', countActive: 'bg-emerald-500 text-slate-950',
+        moduleLabel: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/25',
+        descBorder: 'border-l-2 border-emerald-500/30',
+      },
+      cyan: {
+        badge: 'bg-cyan-500/15 text-cyan-400 border border-cyan-500/30',
+        icon: 'text-cyan-400', iconBg: 'bg-cyan-500/15 border-cyan-500/30',
+        navActive: 'bg-slate-800 ring-1 ring-cyan-500/30 shadow-inner shadow-cyan-900/20',
+        navDot: 'bg-cyan-500', countActive: 'bg-cyan-500 text-slate-950',
+        moduleLabel: 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/25',
+        descBorder: 'border-l-2 border-cyan-500/30',
+      },
+      blue: {
+        badge: 'bg-blue-500/15 text-blue-400 border border-blue-500/30',
+        icon: 'text-blue-400', iconBg: 'bg-blue-500/15 border-blue-500/30',
+        navActive: 'bg-slate-800 ring-1 ring-blue-500/30 shadow-inner shadow-blue-900/20',
+        navDot: 'bg-blue-500', countActive: 'bg-blue-500 text-slate-100',
+        moduleLabel: 'bg-blue-500/10 text-blue-400 border border-blue-500/25',
+        descBorder: 'border-l-2 border-blue-500/30',
+      },
+      violet: {
+        badge: 'bg-violet-500/15 text-violet-400 border border-violet-500/30',
+        icon: 'text-violet-400', iconBg: 'bg-violet-500/15 border-violet-500/30',
+        navActive: 'bg-slate-800 ring-1 ring-violet-500/30 shadow-inner shadow-violet-900/20',
+        navDot: 'bg-violet-500', countActive: 'bg-violet-500 text-slate-100',
+        moduleLabel: 'bg-violet-500/10 text-violet-400 border border-violet-500/25',
+        descBorder: 'border-l-2 border-violet-500/30',
+      },
+      orange: {
+        badge: 'bg-orange-500/15 text-orange-400 border border-orange-500/30',
+        icon: 'text-orange-400', iconBg: 'bg-orange-500/15 border-orange-500/30',
+        navActive: 'bg-slate-800 ring-1 ring-orange-500/30 shadow-inner shadow-orange-900/20',
+        navDot: 'bg-orange-500', countActive: 'bg-orange-500 text-slate-950',
+        moduleLabel: 'bg-orange-500/10 text-orange-400 border border-orange-500/25',
+        descBorder: 'border-l-2 border-orange-500/30',
+      },
+      yellow: {
+        badge: 'bg-yellow-500/15 text-yellow-400 border border-yellow-500/30',
+        icon: 'text-yellow-400', iconBg: 'bg-yellow-500/15 border-yellow-500/30',
+        navActive: 'bg-slate-800 ring-1 ring-yellow-500/30 shadow-inner shadow-yellow-900/20',
+        navDot: 'bg-yellow-500', countActive: 'bg-yellow-500 text-slate-950',
+        moduleLabel: 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/25',
+        descBorder: 'border-l-2 border-yellow-500/30',
+      },
+      pink: {
+        badge: 'bg-pink-500/15 text-pink-400 border border-pink-500/30',
+        icon: 'text-pink-400', iconBg: 'bg-pink-500/15 border-pink-500/30',
+        navActive: 'bg-slate-800 ring-1 ring-pink-500/30 shadow-inner shadow-pink-900/20',
+        navDot: 'bg-pink-500', countActive: 'bg-pink-500 text-slate-100',
+        moduleLabel: 'bg-pink-500/10 text-pink-400 border border-pink-500/25',
+        descBorder: 'border-l-2 border-pink-500/30',
+      },
+    };
+
+    // ===========================================================
+    // ██████  CAPA DE PERSISTENCIA — Read / Write localStorage
+    // ===========================================================
+
+    function loadData() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && Array.isArray(parsed.tools)) return parsed;
+        }
+      } catch (err) {
+        console.warn('[CMS] localStorage parse error — usando datos por defecto.', err);
+      }
+      return JSON.parse(JSON.stringify(DEFAULT_DATA));
+    }
+
+    function saveData() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      } catch (err) {
+        console.error('[CMS] Error al guardar en localStorage.', err);
+        showToast('No se pudo guardar. Verifica el espacio disponible.', 'error');
+      }
+    }
+
+    // ===========================================================
+    // ██████  ESTADO GLOBAL
+    // ===========================================================
+
+    let appState = loadData();
+    let currentToolId = null;
+
+    // ===========================================================
+    // ██████  REGEX — Extracción de ID de YouTube
+    // ===========================================================
+
+    /**
+     * Extrae el ID de 11 caracteres de un video de YouTube.
+     * Soporta: youtube.com/watch?v=ID, youtu.be/ID, youtube.com/embed/ID,
+     * youtube.com/shorts/ID, youtube-nocookie.com/embed/ID, o ID directo.
+     */
+    function extractYouTubeId(input) {
+      if (!input || typeof input !== 'string') return null;
+      const str = input.trim();
+      const urlRegex = /(?:youtube(?:-nocookie)?\.com\/(?:watch\?(?:[\w=&%;+@$!,~.-]*&)?v=|embed\/|v\/|shorts\/|live\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+      const urlMatch = str.match(urlRegex);
+      if (urlMatch) return urlMatch[1];
+      if (/^[a-zA-Z0-9_-]{11}$/.test(str)) return str;
+      return null;
+    }
+
+    // ===========================================================
+    // ██████  UTILIDAD — Escape XSS
+    // ===========================================================
+
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#039;').replace(/`/g, '&#96;');
+    }
+
+    // ===========================================================
+    // ██████  RENDERIZADO — Sidebar
+    // ===========================================================
+
+    function renderSidebar() {
+      const nav = document.getElementById('tool-nav');
+      nav.innerHTML = '';
+      appState.tools.forEach(tool => {
+        const C = COLOR_MAP[tool.color] || COLOR_MAP.emerald;
+        const isActive = tool.id === currentToolId;
+        const count = tool.videos.length;
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <button data-tool-id="${tool.id}" onclick="selectTool('${tool.id}')"
+            class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-200 group
+                   ${isActive ? C.navActive + ' nav-active-glow' : 'hover:bg-slate-800/70 text-slate-400 hover:text-slate-200'}"
+            aria-current="${isActive ? 'page' : 'false'}">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 border transition-all duration-200
+                        ${isActive ? C.iconBg : 'bg-slate-800/80 border-slate-700 group-hover:border-slate-600'}">
+              <i class="${tool.icon} text-xs ${isActive ? C.icon : 'text-slate-500 group-hover:text-slate-400'}"></i>
+            </div>
+            <span class="flex-1 text-sm font-medium truncate leading-tight
+                         ${isActive ? 'text-slate-100' : 'text-slate-400 group-hover:text-slate-200'}">
+              ${escapeHtml(tool.name)}
+            </span>
+            ${count > 0
+              ? `<span class="text-[11px] px-1.5 py-0.5 rounded-md font-mono font-bold flex-shrink-0 transition-all
+                             ${isActive ? C.countActive : 'bg-slate-800 text-slate-500 group-hover:text-slate-400'}">${count}</span>`
+              : `<span class="text-[10px] text-slate-700 flex-shrink-0 font-mono group-hover:text-slate-600">—</span>`}
+          </button>`;
+        nav.appendChild(li);
+      });
+    }
+
+    // ===========================================================
+    // ██████  RENDERIZADO — Área Principal
+    // ===========================================================
+
+    function renderTool(toolId) {
+      const tool = appState.tools.find(t => t.id === toolId);
+      if (!tool) return;
+      const C = COLOR_MAP[tool.color] || COLOR_MAP.emerald;
+
+      // Header
+      document.getElementById('tool-title').textContent = tool.name;
+      const iconWrap = document.getElementById('header-icon-wrap');
+      iconWrap.className = `w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 border transition-all duration-300 ${C.iconBg}`;
+      document.getElementById('header-tool-icon').className = `${tool.icon} text-sm ${C.icon}`;
+      const addBtn = document.getElementById('btn-add-video');
+      addBtn.classList.remove('hidden'); addBtn.classList.add('inline-flex');
+      const countBadge = document.getElementById('module-count-badge');
+      countBadge.classList.remove('hidden'); countBadge.classList.add('inline-flex');
+      document.getElementById('module-count-text').textContent = `${tool.videos.length} módulo${tool.videos.length !== 1 ? 's' : ''}`;
+
+      document.getElementById('welcome-state').classList.add('hidden');
+      const listEl = document.getElementById('video-list');
+      const emptyEl = document.getElementById('empty-tool-state');
+
+      if (tool.videos.length === 0) {
+        listEl.classList.add('hidden'); listEl.innerHTML = '';
+        emptyEl.classList.remove('hidden'); emptyEl.classList.add('flex');
+        return;
+      }
+
+      emptyEl.classList.add('hidden'); emptyEl.classList.remove('flex');
+      listEl.classList.remove('hidden');
+      destroyPlayers();
+      listEl.innerHTML = '';
+
+      tool.videos.forEach((video, index) => {
+        const moduleNum = index + 1;
+        const isFirst = index === 0;
+        const isLast = index === tool.videos.length - 1;
+        const total = tool.videos.length;
+        const card = document.createElement('article');
+        card.id = `video-card-${index}`;
+        card.className = 'video-card bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden';
+        card.setAttribute('data-index', index);
+        card.innerHTML = `
+          <div class="flex items-start sm:items-center justify-between gap-3 px-4 sm:px-5 py-3 bg-slate-800/50 border-b border-slate-800">
+            <div class="flex items-start sm:items-center gap-2.5 min-w-0 flex-1">
+              <span class="flex-shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wide ${C.moduleLabel}">
+                <i class="fa-solid fa-play text-[9px]"></i> M${moduleNum}
+              </span>
+              <h3 class="text-sm font-semibold text-slate-200 leading-snug line-clamp-2">${escapeHtml(video.title)}</h3>
+            </div>
+            <div class="flex items-center gap-1 flex-shrink-0">
+              <button onclick="moveVideo('${toolId}',${index},-1)" ${isFirst ? 'disabled' : ''} title="Subir"
+                class="w-7 h-7 rounded-lg flex items-center justify-center text-[11px] transition-all focus:outline-none
+                       ${isFirst ? 'bg-slate-800/40 text-slate-700 cursor-not-allowed' : 'bg-slate-700/80 hover:bg-emerald-500/20 text-slate-400 hover:text-emerald-400 border border-slate-600/80 hover:border-emerald-500/40 active:scale-90 cursor-pointer'}">
+                <i class="fa-solid fa-chevron-up"></i></button>
+              <button onclick="moveVideo('${toolId}',${index},1)" ${isLast ? 'disabled' : ''} title="Bajar"
+                class="w-7 h-7 rounded-lg flex items-center justify-center text-[11px] transition-all focus:outline-none
+                       ${isLast ? 'bg-slate-800/40 text-slate-700 cursor-not-allowed' : 'bg-slate-700/80 hover:bg-emerald-500/20 text-slate-400 hover:text-emerald-400 border border-slate-600/80 hover:border-emerald-500/40 active:scale-90 cursor-pointer'}">
+                <i class="fa-solid fa-chevron-down"></i></button>
+              <span class="w-px h-4 bg-slate-700 mx-0.5"></span>
+              <button onclick="openEditModal('${toolId}',${index})" title="Editar"
+                class="w-7 h-7 rounded-lg flex items-center justify-center text-[11px] transition-all focus:outline-none
+                       bg-slate-700/80 hover:bg-cyan-500/20 text-slate-400 hover:text-cyan-400 border border-slate-600/80 hover:border-cyan-500/40 active:scale-90">
+                <i class="fa-solid fa-pen"></i></button>
+              <button onclick="deleteVideo('${toolId}',${index})" title="Eliminar"
+                class="w-7 h-7 rounded-lg flex items-center justify-center text-[11px] transition-all focus:outline-none
+                       bg-slate-700/80 hover:bg-red-500/20 text-slate-400 hover:text-red-400 border border-slate-600/80 hover:border-red-500/40 active:scale-90">
+                <i class="fa-solid fa-trash"></i></button>
+            </div>
+          </div>
+          <div class="p-4 sm:p-5 space-y-4">
+            <p class="text-slate-400 text-sm leading-relaxed pl-3 ${C.descBorder}">${escapeHtml(video.description)}</p>
+            <div class="iframe-wrapper rounded-xl overflow-hidden border border-slate-800 bg-slate-950 shadow-inner">
+              <div id="ytplayer-${toolId}-${index}" class="absolute inset-0 w-full h-full"
+                   data-video-id="${escapeHtml(video.youtubeId)}"></div>
+            </div>
+            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-600 pt-1 border-t border-slate-800">
+              <span class="flex items-center gap-1.5"><i class="fa-brands fa-youtube text-red-600/60"></i>
+                <code class="font-mono text-slate-500">${escapeHtml(video.youtubeId)}</code></span>
+              <span class="flex items-center gap-1.5"><i class="fa-solid fa-film"></i> Módulo ${moduleNum} de ${total}</span>
+              <a href="https://www.youtube.com/watch?v=${escapeHtml(video.youtubeId)}" target="_blank" rel="noopener noreferrer"
+                class="flex items-center gap-1 hover:text-slate-400 transition-colors" title="Ver en YouTube">
+                <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> YouTube</a>
+            </div>
+          </div>`;
+        listEl.appendChild(card);
+      });
+      initializePlayers(toolId, tool.videos);
+    }
+
+    // ===========================================================
+    // ██████  PLAYER DE YOUTUBE — IFrame Player API (vía JS)
+    // Permite detectar errores reales del embed (153/150 = el dueño
+    // deshabilitó la reproducción embebida) y mostrar un fallback.
+    // ===========================================================
+
+    let players = {};
+    let ytApiReady = false;
+    let pendingPlayers = [];
+    let playerObserver = null;
+    let playerFallbackTimer = null;
+
+    function onYouTubeIframeAPIReady() {
+      ytApiReady = true;
+      pendingPlayers.forEach(config => createPlayer(config));
+      pendingPlayers = [];
+    }
+
+    function createPlayer(config) {
+      if (typeof YT === 'undefined' || !YT.Player) {
+        pendingPlayers.push(config);
+        return;
+      }
+      const el = document.getElementById(config.id);
+      if (!el) return;
+      if (players[config.id]) return;
+      const vars = { rel: 0, modestbranding: 1, playsinline: 1 };
+      if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
+        vars.origin = window.location.origin;
+      }
+      try {
+        players[config.id] = new YT.Player(config.id, {
+          videoId: config.videoId,
+          width: '100%',
+          height: '100%',
+          playerVars: vars,
+          events: {
+            onError: (event) => { if (config.onError) config.onError(event, config); },
+          },
+        });
+      } catch (err) {
+        console.error('[CMS] No se pudo crear el player de YouTube.', err);
+        const wrap = document.getElementById(config.id);
+        if (wrap && config.video) wrap.innerHTML = buildEmbedFallback(config.video);
+      }
+    }
+
+    function destroyPlayers() {
+      if (playerObserver) playerObserver.disconnect();
+      if (playerFallbackTimer) { clearTimeout(playerFallbackTimer); playerFallbackTimer = null; }
+      Object.keys(players).forEach(id => {
+        try { players[id].destroy(); } catch (err) { /* ignorar */ }
+        delete players[id];
+      });
+      players = {};
+      pendingPlayers = [];
+      if (window.__pendingPlayerConfigs) window.__pendingPlayerConfigs = {};
+    }
+
+    function initializePlayers(toolId, videos) {
+      if (!window.__pendingPlayerConfigs) window.__pendingPlayerConfigs = {};
+
+      const queue = (video, index) => {
+        const playerId = `ytplayer-${toolId}-${index}`;
+        const wrap = document.getElementById(playerId);
+        if (!wrap) return;
+        const config = {
+          id: playerId,
+          videoId: video.youtubeId,
+          video,
+          toolId,
+          index,
+          onError: handlePlayerError,
+        };
+        window.__pendingPlayerConfigs[playerId] = config;
+        if (window.__pendingPlayerConfigs[playerId].created) return;
+        if ('IntersectionObserver' in window) {
+          if (!playerObserver) {
+            playerObserver = new IntersectionObserver((entries) => {
+              entries.forEach(entry => {
+                if (!entry.isIntersecting) return;
+                playerObserver.unobserve(entry.target);
+                const cfg = window.__pendingPlayerConfigs[entry.target.id];
+                if (cfg && !cfg.created) { cfg.created = true; createPlayer(cfg); }
+              });
+            }, { rootMargin: '250px 0px' });
+          }
+          playerObserver.observe(wrap);
+        } else {
+          config.created = true;
+          createPlayer(config);
+        }
+      };
+
+      videos.forEach(queue);
+
+      if (playerFallbackTimer) clearTimeout(playerFallbackTimer);
+      playerFallbackTimer = setTimeout(() => {
+        if (ytApiReady) return;
+        document.querySelectorAll('#video-list [id^="ytplayer-"]').forEach(el => {
+          if (!el.innerHTML.trim() && el.dataset.videoId) {
+            el.innerHTML = `<iframe src="https://www.youtube.com/embed/${escapeHtml(el.dataset.videoId)}"
+              title="Video"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+              allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
+          }
+        });
+      }, 6000);
+    }
+
+    function handlePlayerError(event, config) {
+      const code = event.data;
+      if (code === 153 || code === 150 || code === 101 || code === 5) {
+        const wrap = document.getElementById(config.id);
+        if (wrap && config.video) {
+          wrap.innerHTML = buildEmbedFallback(config.video);
+        }
+        delete players[config.id];
+      } else {
+        console.warn(`[CMS] Error de YouTube en "${config.video.title}": código ${code}`, event);
+      }
+    }
+
+    function buildEmbedFallback(video) {
+      const watchUrl = `https://www.youtube.com/watch?v=${escapeHtml(video.youtubeId)}`;
+      return `
+        <div class="flex flex-col items-center justify-center text-center px-4 py-6 h-full min-h-[220px] bg-slate-900 rounded-xl border border-slate-800">
+          <div class="w-12 h-12 mb-3 rounded-xl bg-red-500/15 border border-red-500/30 flex items-center justify-center">
+            <i class="fa-brands fa-youtube text-red-400 text-xl"></i>
+          </div>
+          <p class="text-slate-200 text-sm font-semibold mb-1">Este video no permite reproducción embebida</p>
+          <p class="text-slate-500 text-xs mb-4 max-w-[260px] leading-relaxed line-clamp-2">${escapeHtml(video.title)}</p>
+          <a href="${watchUrl}" target="_blank" rel="noopener noreferrer"
+             class="inline-flex items-center gap-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-400 hover:to-red-500
+                    text-white text-xs font-bold px-4 py-2 rounded-lg transition-all active:scale-95 shadow-lg shadow-red-900/30">
+            <i class="fa-brands fa-youtube"></i> Ver en YouTube
+          </a>
+        </div>`;
+    }
+
+    // ===========================================================
+    // ██████  ACCIONES — Seleccionar / Mover / Eliminar
+    // ===========================================================
+
+    function selectTool(toolId) {
+      currentToolId = toolId;
+      renderSidebar();
+      renderTool(toolId);
+      document.getElementById('scroll-area').scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function moveVideo(toolId, index, direction) {
+      const tool = appState.tools.find(t => t.id === toolId);
+      if (!tool) return;
+      const targetIndex = index + direction;
+      if (targetIndex < 0 || targetIndex >= tool.videos.length) return;
+      [tool.videos[index], tool.videos[targetIndex]] = [tool.videos[targetIndex], tool.videos[index]];
+      saveData(); renderSidebar(); renderTool(toolId);
+      setTimeout(() => {
+        const movedCard = document.getElementById(`video-card-${targetIndex}`);
+        if (movedCard) {
+          movedCard.classList.add('highlight-pulse', 'ring-2', 'ring-emerald-500/40');
+          setTimeout(() => movedCard.classList.remove('highlight-pulse', 'ring-2', 'ring-emerald-500/40'), 900);
+          movedCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      }, 60);
+      showToast(direction === -1 ? 'Módulo subido.' : 'Módulo bajado.', 'success');
+    }
+
+    function deleteVideo(toolId, index) {
+      const tool = appState.tools.find(t => t.id === toolId);
+      if (!tool) return;
+      const videoTitle = tool.videos[index]?.title || `Módulo ${index + 1}`;
+      if (!window.confirm(`¿Eliminar "${videoTitle}"?\n\nEsta acción no se puede deshacer.`)) return;
+      tool.videos.splice(index, 1);
+      saveData(); renderSidebar(); renderTool(toolId);
+      showToast(`Módulo eliminado correctamente.`, 'info');
+    }
+
+    // ===========================================================
+    // ██████  MODAL — Abrir / Cerrar / Editar
+    // ===========================================================
+
+    function openModal() {
+      document.getElementById('modal-title').textContent = 'Añadir Nuevo Módulo';
+      document.getElementById('modal-icon').className = 'fa-solid fa-circle-plus text-emerald-400 text-sm';
+      document.getElementById('modal-icon-wrap').className = 'w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center';
+      document.getElementById('submit-icon').className = 'fa-solid fa-circle-plus';
+      document.getElementById('submit-label').textContent = 'Agregar Módulo';
+      document.getElementById('edit-index').value = '-1';
+      document.getElementById('video-form').reset();
+      hideUrlFeedback(); showModal();
+    }
+
+    function openEditModal(toolId, index) {
+      const tool = appState.tools.find(t => t.id === toolId);
+      if (!tool) return;
+      const video = tool.videos[index];
+      if (!video) return;
+      document.getElementById('modal-title').textContent = `Editar Módulo ${index + 1}`;
+      document.getElementById('modal-icon').className = 'fa-solid fa-pen text-cyan-400 text-sm';
+      document.getElementById('modal-icon-wrap').className = 'w-8 h-8 rounded-xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center';
+      document.getElementById('submit-icon').className = 'fa-solid fa-floppy-disk';
+      document.getElementById('submit-label').textContent = 'Guardar Cambios';
+      document.getElementById('edit-index').value = String(index);
+      document.getElementById('input-title').value = video.title;
+      document.getElementById('input-desc').value = video.description;
+      const url = `https://www.youtube.com/watch?v=${video.youtubeId}`;
+      document.getElementById('input-url').value = url;
+      validateYouTubeUrl(url);
+      showModal();
+    }
+
+    function showModal() {
+      const overlay = document.getElementById('modal-overlay');
+      const box = document.getElementById('modal-box');
+      overlay.classList.remove('hidden');
+      box.style.animation = 'none'; void box.offsetWidth; box.style.animation = '';
+      setTimeout(() => document.getElementById('input-title').focus(), 80);
+    }
+
+    function closeModal() {
+      document.getElementById('modal-overlay').classList.add('hidden');
+      document.getElementById('video-form').reset();
+      hideUrlFeedback();
+    }
+
+    function handleOverlayClick(event) {
+      if (event.target === document.getElementById('modal-overlay')) closeModal();
+    }
+
+    // ===========================================================
+    // ██████  VALIDACIÓN — URL YouTube en tiempo real
+    // ===========================================================
+
+    function hideUrlFeedback() {
+      document.getElementById('url-valid-icon').classList.add('hidden');
+      document.getElementById('url-preview').classList.add('hidden');
+    }
+
+    function validateYouTubeUrl(value) {
+      const videoId = extractYouTubeId(value);
+      const previewEl = document.getElementById('url-preview');
+      const iconEl = document.getElementById('url-valid-icon');
+      const idEl = document.getElementById('extracted-id');
+      const inputEl = document.getElementById('input-url');
+      if (videoId) {
+        idEl.textContent = videoId;
+        previewEl.classList.remove('hidden'); iconEl.classList.remove('hidden');
+        inputEl.classList.remove('border-red-500/60'); inputEl.classList.add('border-emerald-500/50');
+      } else {
+        previewEl.classList.add('hidden'); iconEl.classList.add('hidden');
+        if (value.length > 5) {
+          inputEl.classList.add('border-red-500/60'); inputEl.classList.remove('border-emerald-500/50');
+        } else {
+          inputEl.classList.remove('border-red-500/60', 'border-emerald-500/50');
+        }
+      }
+    }
+
+    // ===========================================================
+    // ██████  FORMULARIO — Submit (Añadir o Editar)
+    // ===========================================================
+
+    function handleFormSubmit(event) {
+      event.preventDefault();
+      if (!currentToolId) { showToast('Ninguna herramienta seleccionada.', 'error'); return; }
+      const title = document.getElementById('input-title').value.trim();
+      const urlInput = document.getElementById('input-url').value.trim();
+      const desc = document.getElementById('input-desc').value.trim();
+      const editIndex = parseInt(document.getElementById('edit-index').value, 10);
+      const youtubeId = extractYouTubeId(urlInput);
+      if (!youtubeId) {
+        showToast('URL de YouTube no válida.', 'error');
+        document.getElementById('input-url').focus();
+        document.getElementById('input-url').classList.add('border-red-500/60');
+        return;
+      }
+      const tool = appState.tools.find(t => t.id === currentToolId);
+      if (!tool) return;
+      const videoData = { title, description: desc, youtubeId };
+      if (editIndex >= 0) {
+        tool.videos[editIndex] = videoData;
+        showToast(`Módulo ${editIndex + 1} actualizado.`, 'success');
+      } else {
+        tool.videos.push(videoData);
+        showToast(`Módulo ${tool.videos.length} añadido.`, 'success');
+      }
+      saveData(); closeModal(); renderSidebar(); renderTool(currentToolId);
+      const targetIdx = editIndex >= 0 ? editIndex : tool.videos.length - 1;
+      setTimeout(() => {
+        const card = document.getElementById(`video-card-${targetIdx}`);
+        if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 120);
+    }
+
+    // ===========================================================
+    // ██████  TOAST NOTIFICATIONS
+    // ===========================================================
+
+    function showToast(message, type = 'info', duration = 3500) {
+      const container = document.getElementById('toast-container');
+      const CFG = {
+        success: { icon: 'fa-circle-check', color: 'text-emerald-400', border: 'border-emerald-500/25', glow: 'shadow-emerald-900/30' },
+        error: { icon: 'fa-circle-xmark', color: 'text-red-400', border: 'border-red-500/25', glow: 'shadow-red-900/30' },
+        info: { icon: 'fa-circle-info', color: 'text-cyan-400', border: 'border-cyan-500/25', glow: 'shadow-cyan-900/30' },
+      };
+      const cfg = CFG[type] || CFG.info;
+      const toast = document.createElement('div');
+      toast.className = `pointer-events-auto flex items-center gap-3 min-w-[220px] max-w-xs bg-slate-800/95 backdrop-blur-sm border rounded-xl px-4 py-3 shadow-xl text-sm text-slate-200 toast-enter ${cfg.border} ${cfg.glow}`;
+      toast.innerHTML = `<i class="fa-solid ${cfg.icon} ${cfg.color} text-base flex-shrink-0"></i><span class="leading-snug">${escapeHtml(message)}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+        toast.style.opacity = '0'; toast.style.transform = 'translateX(110%)';
+        setTimeout(() => toast.remove(), 350);
+      }, duration);
+    }
+
+    // ===========================================================
+    // ██████  ATAJOS DE TECLADO
+    // ===========================================================
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const overlay = document.getElementById('modal-overlay');
+        if (!overlay.classList.contains('hidden')) closeModal();
+      }
+    });
+
+    // ===========================================================
+    // ██████  INICIALIZACIÓN
+    // ===========================================================
+
+    (function init() {
+      renderSidebar();
+      if (appState.tools.length > 0) selectTool(appState.tools[0].id);
+      console.info('%c[CMS CiberSec v3] %cInicializado — 7 herramientas, 84 videos reales.', 'color:#10b981;font-weight:bold;', 'color:#94a3b8;');
+    })();
+  </script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"f0f03d0605bf45f1a3b17cf7d5e6861f","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
