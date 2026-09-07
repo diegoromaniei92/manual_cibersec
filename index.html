@@ -2,7 +2,12 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="description" content="CMS de manuales instructivos de ciberseguridad: Cylance, Trend Micro Deep Security, Microsoft Defender, Cymulate, BeyondTrust, Splunk y Darktrace." />
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://www.youtube.com https://s.ytimg.com https://static.cloudflareinsights.com blob:; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' data: https://cdnjs.cloudflare.com; img-src 'self' data: blob: https://i.ytimg.com https://www.ytimg.com https://www.youtube.com; media-src 'self' blob:; frame-src https://www.youtube.com https://www.youtube-nocookie.com; connect-src 'self' https://www.youtube.com https://cloudflareinsights.com; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests" />
   <title>CMS Ciberseguridad — Manual Instructivo</title>
 
   <!-- Tailwind CSS CDN -->
@@ -85,18 +90,58 @@
       100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); }
     }
     .highlight-pulse { animation: highlightPulse 0.7s ease; }
+
+    /* ============================================================
+       Mobile-first: alto dinámico (dvh) + insets de pantallas con notch
+    ============================================================ */
+    html { height: 100%; }
+    body { height: 100vh !important; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+    @supports (height: 100dvh) { body { height: 100dvh !important; } }
+
+    #scroll-area { -webkit-overflow-scrolling: touch; overscroll-behavior-y: contain; }
+    nav { overscroll-behavior: contain; }
+
+    .safe-top    { padding-top: max(0.875rem, env(safe-area-inset-top)) !important; }
+    .safe-bottom { padding-bottom: max(1.5rem, env(safe-area-inset-bottom)) !important; }
+    .safe-toast  { bottom: max(1.25rem, env(safe-area-inset-bottom)) !important; }
+    @media (max-width: 639px) {
+      .safe-toast { right: 1.25rem !important; left: 1.25rem !important; }
+    }
+    @media (min-width: 640px) {
+      .safe-toast { right: 1.25rem !important; left: auto !important; }
+    }
+
+    /* ============================================================
+       Sidebar móvil: drawer off-canvas + backdrop
+    ============================================================ */
+    #sidebar {
+      position: fixed;
+      top: 0; bottom: 0; left: 0;
+      transform: translateX(-100%);
+      transition: transform 0.28s ease;
+      max-width: 85vw;
+    }
+    #sidebar.open-drawer { transform: translateX(0); }
+    #sidebar-backdrop { transition: opacity 0.2s ease; }
+    @media (min-width: 1024px) {
+      #sidebar { position: static; transform: none !important; max-width: none; }
+      #sidebar-backdrop { display: none !important; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #sidebar, .toast-enter, #modal-box, #modal-overlay { transition: none !important; animation: none !important; }
+    }
   </style>
 </head>
 
-<body class="bg-slate-950 text-slate-100 font-sans flex h-screen overflow-hidden scanline">
+<body class="bg-slate-950 text-slate-100 font-sans flex overflow-hidden scanline">
 
   <!-- ============================================================
        SIDEBAR — Navegación de Herramientas
   ============================================================ -->
-  <aside class="w-[17rem] min-w-[17rem] bg-slate-900 border-r border-slate-800 flex flex-col overflow-hidden shadow-2xl z-20">
+  <aside id="sidebar" class="w-[17rem] min-w-[17rem] bg-slate-900 border-r border-slate-800 flex flex-col overflow-hidden shadow-2xl z-40" aria-label="Menú lateral de herramientas">
 
     <!-- Sidebar Header / Logo -->
-    <div class="px-5 py-4 border-b border-slate-800 flex items-center gap-3 bg-slate-950/60">
+    <div class="safe-top px-5 py-4 border-b border-slate-800 flex items-center gap-3 bg-slate-950/60">
       <div class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-900/40 flex-shrink-0">
         <i class="fa-solid fa-shield-halved text-slate-950 text-base"></i>
       </div>
@@ -121,11 +166,14 @@
     </nav>
 
     <!-- Sidebar Footer -->
-    <div class="px-4 py-3 border-t border-slate-800 flex items-center gap-2">
+    <div class="safe-bottom px-4 py-3 border-t border-slate-800 flex items-center gap-2">
       <i class="fa-solid fa-lock text-slate-600 text-xs"></i>
       <span class="text-[10px] text-slate-600 font-mono">v3.0 &mdash; Cybersec CMS</span>
     </div>
   </aside>
+
+  <!-- Backdrop móvil para el drawer del menú -->
+  <div id="sidebar-backdrop" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-30" data-action="close-sidebar" aria-hidden="true"></div>
 
   <!-- ============================================================
        MAIN CONTENT — Manual Instructivo
@@ -133,37 +181,47 @@
   <main class="flex-1 flex flex-col overflow-hidden bg-slate-950">
 
     <!-- Top Bar / Header -->
-    <header class="flex-shrink-0 bg-slate-900/90 backdrop-blur border-b border-slate-800 px-6 lg:px-8 py-3.5 flex items-center justify-between shadow-lg">
-      <div class="flex items-center gap-3 min-w-0">
+    <header class="safe-top flex-shrink-0 bg-slate-900/90 backdrop-blur border-b border-slate-800 px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between gap-3 shadow-lg">
+      <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+        <button
+          id="btn-menu"
+          data-action="toggle-sidebar"
+          aria-label="Abrir menú de herramientas"
+          aria-expanded="false"
+          aria-controls="sidebar"
+          class="lg:hidden w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center flex-shrink-0 transition-colors hover:bg-slate-700 active:scale-95 focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
+        >
+          <i class="fa-solid fa-bars text-slate-300 text-sm"></i>
+        </button>
         <div id="header-icon-wrap" class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 bg-slate-800 border border-slate-700 transition-all duration-300">
           <i id="header-tool-icon" class="fa-solid fa-book-open text-slate-400 text-sm"></i>
         </div>
         <div class="min-w-0">
-          <p class="text-[10px] text-slate-500 uppercase tracking-widest font-semibold leading-none mb-0.5">Manual Instructivo</p>
-          <h2 id="tool-title" class="text-base font-bold text-slate-100 truncate">Selecciona una herramienta</h2>
+          <p class="text-[10px] text-slate-500 uppercase tracking-widest font-semibold leading-none mb-0.5 hidden sm:block">Manual Instructivo</p>
+          <h2 id="tool-title" class="text-sm sm:text-base font-bold text-slate-100 truncate">Selecciona una herramienta</h2>
         </div>
       </div>
-      <div class="flex items-center gap-3 flex-shrink-0">
-        <div id="module-count-badge" class="hidden items-center gap-1.5 px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg">
-          <i class="fa-solid fa-film text-slate-500 text-xs"></i>
+      <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+        <div id="module-count-badge" class="hidden items-center gap-1.5 px-2 sm:px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg">
+          <i class="fa-solid fa-film text-slate-500 text-xs hidden sm:inline-flex"></i>
           <span id="module-count-text" class="text-xs font-mono text-slate-400">0 módulos</span>
         </div>
         <button
           id="btn-add-video"
+          data-action="open-modal"
           class="hidden items-center gap-2 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400
-                 text-slate-950 font-bold px-4 py-2 rounded-xl text-sm transition-all duration-200
+                 text-slate-950 font-bold px-2.5 sm:px-4 py-2 rounded-xl text-sm transition-all duration-200
                  shadow-lg shadow-emerald-900/30 active:scale-95 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
-          onclick="openModal()"
         >
           <i class="fa-solid fa-circle-plus text-sm"></i>
-          <span>Añadir Módulo</span>
+          <span class="hidden sm:inline">Añadir Módulo</span>
         </button>
       </div>
     </header>
 
     <!-- Scrollable Content Area -->
     <div id="scroll-area" class="flex-1 overflow-y-auto">
-      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div class="safe-bottom max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
         <!-- STATE: Welcome / No selection -->
         <div id="welcome-state" class="flex flex-col items-center justify-center min-h-[70vh] text-center">
@@ -204,7 +262,7 @@
             Esta herramienta no tiene videos registrados. Añade el primer módulo usando el botón en la barra superior.
           </p>
           <button
-            onclick="openModal()"
+            data-action="open-modal"
             class="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-emerald-500/50
                    text-slate-300 hover:text-emerald-400 font-semibold px-5 py-2.5 rounded-xl text-sm transition-all"
           >
@@ -224,11 +282,11 @@
   ============================================================ -->
   <div
     id="modal-overlay"
-    class="hidden fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-    onclick="handleOverlayClick(event)"
+    class="hidden fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4"
+    data-action="overlay-close"
   >
     <div id="modal-box" class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-lg shadow-[0_25px_80px_rgba(0,0,0,0.7)] overflow-hidden">
-      <div class="flex items-center justify-between px-6 py-4 bg-slate-800/80 border-b border-slate-700">
+      <div class="flex items-center justify-between px-4 sm:px-6 py-4 bg-slate-800/80 border-b border-slate-700">
         <div class="flex items-center gap-3">
           <div id="modal-icon-wrap" class="w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center">
             <i id="modal-icon" class="fa-solid fa-circle-plus text-emerald-400 text-sm"></i>
@@ -236,13 +294,14 @@
           <h3 id="modal-title" class="text-base font-bold text-slate-100">Añadir Nuevo Módulo</h3>
         </div>
         <button
-          onclick="closeModal()"
+          data-action="close-modal"
+          aria-label="Cerrar ventana"
           class="w-7 h-7 rounded-lg bg-slate-700 hover:bg-slate-600 flex items-center justify-center transition-colors group"
         >
           <i class="fa-solid fa-xmark text-slate-400 group-hover:text-slate-200 text-sm"></i>
         </button>
       </div>
-      <form id="video-form" class="px-6 py-5 space-y-5" onsubmit="handleFormSubmit(event)" novalidate>
+      <form id="video-form" class="px-4 sm:px-6 py-5 space-y-5" novalidate>
         <input type="hidden" id="edit-index" value="-1" />
         <div class="space-y-1.5">
           <label class="flex items-center gap-1.5 text-[11px] text-emerald-400 uppercase tracking-widest font-bold">
@@ -261,10 +320,9 @@
           <div class="relative">
             <input
               type="text" id="input-url" placeholder="https://www.youtube.com/watch?v=..." required
-              class="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 pr-10 text-sm text-slate-100
-                     placeholder-slate-600 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
-              oninput="validateYouTubeUrl(this.value)"
-            />
+class="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 pr-10 text-sm text-slate-100
+             placeholder-slate-600 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+          />
             <span id="url-valid-icon" class="hidden absolute right-3 top-1/2 -translate-y-1/2">
               <i class="fa-solid fa-circle-check text-emerald-500 text-base"></i>
             </span>
@@ -291,7 +349,7 @@
           ></textarea>
         </div>
         <div class="flex gap-3 pt-1">
-          <button type="button" onclick="closeModal()"
+          <button type="button" data-action="close-modal"
             class="flex-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 font-semibold px-4 py-2.5 rounded-xl text-sm transition-all active:scale-95">
             Cancelar
           </button>
@@ -310,7 +368,7 @@
   <!-- ============================================================
        TOAST NOTIFICATION CONTAINER
   ============================================================ -->
-  <div id="toast-container" class="fixed bottom-5 right-5 z-[60] flex flex-col gap-2 pointer-events-none"></div>
+  <div id="toast-container" class="safe-toast fixed bottom-5 left-5 right-5 sm:left-auto z-[60] flex flex-col gap-2 pointer-events-none"></div>
 
   <!-- ============================================================
        JAVASCRIPT — CMS Engine (Vanilla ES6+)
@@ -917,7 +975,27 @@
         const raw = localStorage.getItem(STORAGE_KEY);
         if (raw) {
           const parsed = JSON.parse(raw);
-          if (parsed && Array.isArray(parsed.tools)) return parsed;
+          if (parsed && Array.isArray(parsed.tools)) {
+            parsed.tools = parsed.tools
+              .filter(t => t && typeof t === 'object' && typeof t.id === 'string' && typeof t.name === 'string')
+              .map(t => ({
+                id: String(t.id).slice(0, 60),
+                name: String(t.name).slice(0, 120),
+                icon: typeof t.icon === 'string' ? String(t.icon).slice(0, 60) : 'fa-solid fa-shield-halved',
+                color: typeof t.color === 'string' ? String(t.color).slice(0, 12) : 'emerald',
+                videos: Array.isArray(t.videos)
+                  ? t.videos
+                      .filter(v => v && typeof v === 'object')
+                      .map(v => ({
+                        title: String(v.title || '').slice(0, 200),
+                        description: String(v.description || '').slice(0, 2000),
+                        youtubeId: typeof v.youtubeId === 'string' && /^[a-zA-Z0-9_-]{11}$/.test(String(v.youtubeId)) ? String(v.youtubeId) : '',
+                      }))
+                      .filter(v => v.youtubeId)
+                  : [],
+              }));
+            return parsed;
+          }
         }
       } catch (err) {
         console.warn('[CMS] localStorage parse error — usando datos por defecto.', err);
@@ -984,7 +1062,7 @@
         const count = tool.videos.length;
         const li = document.createElement('li');
         li.innerHTML = `
-          <button data-tool-id="${tool.id}" onclick="selectTool('${tool.id}')"
+          <button type="button" data-tool-id="${escapeHtml(tool.id)}" data-action="select-tool"
             class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-200 group
                    ${isActive ? C.navActive + ' nav-active-glow' : 'hover:bg-slate-800/70 text-slate-400 hover:text-slate-200'}"
             aria-current="${isActive ? 'page' : 'false'}">
@@ -1050,7 +1128,7 @@
         card.className = 'video-card bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden';
         card.setAttribute('data-index', index);
         card.innerHTML = `
-          <div class="flex items-start sm:items-center justify-between gap-3 px-4 sm:px-5 py-3 bg-slate-800/50 border-b border-slate-800">
+          <div class="flex flex-wrap items-start sm:items-center justify-between gap-x-3 gap-y-2 px-4 sm:px-5 py-3 bg-slate-800/50 border-b border-slate-800">
             <div class="flex items-start sm:items-center gap-2.5 min-w-0 flex-1">
               <span class="flex-shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wide ${C.moduleLabel}">
                 <i class="fa-solid fa-play text-[9px]"></i> M${moduleNum}
@@ -1058,20 +1136,20 @@
               <h3 class="text-sm font-semibold text-slate-200 leading-snug line-clamp-2">${escapeHtml(video.title)}</h3>
             </div>
             <div class="flex items-center gap-1 flex-shrink-0">
-              <button onclick="moveVideo('${toolId}',${index},-1)" ${isFirst ? 'disabled' : ''} title="Subir"
+              <button type="button" data-action="move" data-tool-id="${escapeHtml(toolId)}" data-index="${index}" data-dir="-1" ${isFirst ? 'disabled' : ''} title="Subir"
                 class="w-7 h-7 rounded-lg flex items-center justify-center text-[11px] transition-all focus:outline-none
                        ${isFirst ? 'bg-slate-800/40 text-slate-700 cursor-not-allowed' : 'bg-slate-700/80 hover:bg-emerald-500/20 text-slate-400 hover:text-emerald-400 border border-slate-600/80 hover:border-emerald-500/40 active:scale-90 cursor-pointer'}">
                 <i class="fa-solid fa-chevron-up"></i></button>
-              <button onclick="moveVideo('${toolId}',${index},1)" ${isLast ? 'disabled' : ''} title="Bajar"
+              <button type="button" data-action="move" data-tool-id="${escapeHtml(toolId)}" data-index="${index}" data-dir="1" ${isLast ? 'disabled' : ''} title="Bajar"
                 class="w-7 h-7 rounded-lg flex items-center justify-center text-[11px] transition-all focus:outline-none
                        ${isLast ? 'bg-slate-800/40 text-slate-700 cursor-not-allowed' : 'bg-slate-700/80 hover:bg-emerald-500/20 text-slate-400 hover:text-emerald-400 border border-slate-600/80 hover:border-emerald-500/40 active:scale-90 cursor-pointer'}">
                 <i class="fa-solid fa-chevron-down"></i></button>
               <span class="w-px h-4 bg-slate-700 mx-0.5"></span>
-              <button onclick="openEditModal('${toolId}',${index})" title="Editar"
+              <button type="button" data-action="edit" data-tool-id="${escapeHtml(toolId)}" data-index="${index}" title="Editar"
                 class="w-7 h-7 rounded-lg flex items-center justify-center text-[11px] transition-all focus:outline-none
                        bg-slate-700/80 hover:bg-cyan-500/20 text-slate-400 hover:text-cyan-400 border border-slate-600/80 hover:border-cyan-500/40 active:scale-90">
                 <i class="fa-solid fa-pen"></i></button>
-              <button onclick="deleteVideo('${toolId}',${index})" title="Eliminar"
+              <button type="button" data-action="delete" data-tool-id="${escapeHtml(toolId)}" data-index="${index}" title="Eliminar"
                 class="w-7 h-7 rounded-lg flex items-center justify-center text-[11px] transition-all focus:outline-none
                        bg-slate-700/80 hover:bg-red-500/20 text-slate-400 hover:text-red-400 border border-slate-600/80 hover:border-red-500/40 active:scale-90">
                 <i class="fa-solid fa-trash"></i></button>
@@ -1246,6 +1324,7 @@
       renderSidebar();
       renderTool(toolId);
       document.getElementById('scroll-area').scrollTo({ top: 0, behavior: 'smooth' });
+      if (window.innerWidth < 1024) closeSidebar();
     }
 
     function moveVideo(toolId, index, direction) {
@@ -1415,6 +1494,60 @@
         setTimeout(() => toast.remove(), 350);
       }, duration);
     }
+
+    // ===========================================================
+    // ██████  SIDEBAR MÓVIL — Drawer off-canvas
+    // ===========================================================
+
+    function openSidebar() {
+      const sb = document.getElementById('sidebar');
+      const backdrop = document.getElementById('sidebar-backdrop');
+      const toggle = document.getElementById('btn-menu');
+      sb.classList.add('open-drawer');
+      backdrop.classList.remove('hidden');
+      if (toggle) toggle.setAttribute('aria-expanded', 'true');
+    }
+
+    function closeSidebar() {
+      const sb = document.getElementById('sidebar');
+      const backdrop = document.getElementById('sidebar-backdrop');
+      const toggle = document.getElementById('btn-menu');
+      sb.classList.remove('open-drawer');
+      backdrop.classList.add('hidden');
+      if (toggle) toggle.setAttribute('aria-expanded', 'false');
+    }
+
+    function toggleSidebar() {
+      const sb = document.getElementById('sidebar');
+      if (sb.classList.contains('open-drawer')) closeSidebar(); else openSidebar();
+    }
+
+    // ===========================================================
+    // ██████  DELEGACIÓN DE EVENTOS (sin onclick inline)
+    // Elimina los manejadores de atributo inline → menor superficie XSS
+    // y consistencia con la Content-Security-Policy.
+    // ===========================================================
+
+    document.addEventListener('click', (e) => {
+      const el = e.target.closest('[data-action]');
+      if (!el) return;
+      const action = el.dataset.action;
+      const toolId = el.dataset.toolId;
+      const index = parseInt(el.dataset.index, 10);
+      if (action === 'toggle-sidebar') return toggleSidebar();
+      if (action === 'close-sidebar') return closeSidebar();
+      if (action === 'open-modal') { closeSidebar(); return openModal(); }
+      if (action === 'close-modal') return closeModal();
+      if (action === 'overlay-close' && e.target !== document.getElementById('modal-overlay')) return;
+      if (action === 'overlay-close') return closeModal();
+      if (action === 'select-tool') return selectTool(toolId);
+      if (action === 'move') return moveVideo(toolId, index, parseInt(el.dataset.dir, 10));
+      if (action === 'edit') return openEditModal(toolId, index);
+      if (action === 'delete') return deleteVideo(toolId, index);
+    });
+
+    document.getElementById('video-form').addEventListener('submit', handleFormSubmit);
+    document.getElementById('input-url').addEventListener('input', (e) => validateYouTubeUrl(e.target.value));
 
     // ===========================================================
     // ██████  ATAJOS DE TECLADO

@@ -1,0 +1,61 @@
+# ============================================================
+#  Manual CiberSec — Seguridad y Rendimiento (Apache)
+#  Útil si el sitio se despliega en Apache/cPanel.
+#  En GitHub Pages estos encabezados se emiten desde la
+#  <meta http-equiv="Content-Security-Policy"> del HTML.
+# ============================================================
+
+# ---- Desactivar listado de directorios ----
+Options -Indexes
+
+# ---- Ocultar archivos y carpetas sensibles (.git, etc.) ----
+RedirectMatch 404 /\..*$
+
+# ---- Forzar HTTPS (descomenta si tu hosting soporta reescritura) ----
+# <IfModule mod_rewrite.c>
+#   RewriteEngine On
+#   RewriteCond %{HTTPS} off
+#   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+# </IfModule>
+
+# ---- Encabezados de seguridad ----
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "DENY"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()"
+  Header always set Cross-Origin-Opener-Policy "same-origin"
+  Header always set Cross-Origin-Resource-Policy "same-origin"
+  Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+  Header always set Content-Security-Policy "default-src 'self' data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://www.youtube.com https://s.ytimg.com https://static.cloudflareinsights.com blob:; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' data: https://cdnjs.cloudflare.com; img-src 'self' data: blob: https://i.ytimg.com https://www.ytimg.com https://www.youtube.com; media-src 'self' blob:; frame-src https://www.youtube.com https://www.youtube-nocookie.com; connect-src 'self' https://www.youtube.com https://cloudflareinsights.com; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests"
+</IfModule>
+
+# ---- Bloquear scripts/ofuscación innecesaria (Apache 2.4+ mod_security opcional) ----
+# <IfModule mod_security.c>
+#   SecRuleEngine On
+#   SecRequestBodyAccess On
+# </IfModule>
+
+# ---- Compresión ----
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/css application/javascript application/json application/xml text/xml image/svg+xml
+</IfModule>
+
+# ---- Caché (usa solo con nombres de archivo versionados/hasheados) ----
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/html "access plus 0 seconds"
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType font/woff2 "access plus 1 year"
+</IfModule>
+
+# ---- Prevenir el hotlinking de recursos ----
+# <IfModule mod_rewrite.c>
+#   RewriteEngine On
+#   RewriteCond %{HTTP_REFERER} !^https?://(www\.)?tudominio\.com [NC]
+#   RewriteRule \.(jpe?g|png|gif|svg|webp|woff2?)$ - [NC,F,L]
+# </IfModule>
