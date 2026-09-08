@@ -383,6 +383,7 @@ class="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 pr-10 
     // ===========================================================
 
     const STORAGE_KEY = 'cms_cybersec_v3';
+const DATA_VERSION = 2;
 
     /**
      * Datos iniciales: 7 herramientas de ciberseguridad.
@@ -475,63 +476,63 @@ class="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 pr-10 
           videos: [
             {
               title: 'Introducción a Trend Micro Deep Security',
-              description: 'Primer módulo del curso completo. Introduce la plataforma Deep Security: arquitectura general, componentes (Manager, Agent, Relay, Virtual Appliance), casos de uso para protección de servidores físicos, virtuales y en la nube, y el valor de la seguridad multicapa.',
-              youtubeId: 'OtKvGcyAATI',
+              description: 'Visión general de la plataforma Deep Security: arquitectura general, componentes (Manager, Agent, Relay, Virtual Appliance), casos de uso para la protección de servidores físicos, virtuales y en la nube, y el valor de la seguridad multicapa.',
+              youtubeId: 'vpD48VY8fsU',
             },
             {
-              title: 'Preparación del Servidor para la Instalación del Manager',
-              description: 'Guía de prerrequisitos: preparación del sistema operativo, requisitos de hardware y software, configuración de base de datos (SQL Server/PostgreSQL), apertura de puertos de red necesarios y consideraciones de seguridad previas a la instalación.',
-              youtubeId: 'Gi9Vh-9qqc8',
+              title: 'Tour por la Consola Web de Deep Security',
+              description: 'Recorrido guiado por la consola de administración de Deep Security: navegación por el dashboard, gestión de computadoras, políticas, módulos de protección (Antimalware, IPS, Firewall, Integridad) y configuración global. Ideal como primer contacto con la interfaz.',
+              youtubeId: 'KlAaJYnVwHw',
             },
             {
-              title: 'Descarga del Setup y Licencia Trial del Manager',
-              description: 'Paso a paso para obtener el instalador de Deep Security Manager desde el portal de Trend Micro y activar una licencia de evaluación. Incluye la navegación por el portal de soporte, selección de la versión correcta y verificación de la descarga.',
-              youtubeId: 'XJoQwsimFlM',
+              title: 'Instalación del Servidor para el Deep Security Manager',
+              description: 'Instalación paso a paso del entorno del Deep Security Manager: preparación de la máquina, requisitos previos, instalador del Manager, configuración de la base de datos, definición de credenciales de administrador y verificación del acceso a la consola web.',
+              youtubeId: 'UIGKB3Ib9PY',
             },
             {
-              title: 'Instalación Paso a Paso del Deep Security Manager',
-              description: 'Tutorial detallado de la instalación completa del Deep Security Manager: ejecución del wizard, configuración de la base de datos, definición de credenciales de administrador, configuración del hostname y verificación del acceso a la consola web.',
-              youtubeId: 'qIvuNrM4-Iw',
+              title: 'Requisitos y Dimensionado del Deep Security Manager',
+              description: 'Deep Security 12 - DSM System Requirements and Sizing: requisitos de hardware y software del Manager, dimensionado de infraestructuras según el número de computadoras protegidas y mejores prácticas de despliegue oficiales de Trend Micro.',
+              youtubeId: 'Bva4rOYByiM',
             },
             {
-              title: 'Activación y Renovación de Licencia del Manager',
-              description: 'Cómo activar una nueva licencia en Deep Security Manager, verificar el estado de licenciamiento, renovar licencias expiradas y entender las diferencias entre los niveles de licencia (módulos disponibles por tipo de licencia).',
-              youtubeId: '9JqeECN6Y6I',
+              title: 'Requisitos y Dimensionado del Deep Security Agent',
+              description: 'Deep Security 12 - Agent System Requirements and Sizing: requisitos mínimos del agente, consumo de recursos, dimensionado para entornos grandes, comportamientos en servidores virtualizados y recomendaciones de planificación del despliegue de agentes.',
+              youtubeId: '2J4WQYVN57Y',
             },
             {
-              title: 'Instalación Multi-Nodo del Deep Security Manager',
-              description: 'Configuración de alta disponibilidad con múltiples nodos del Manager: instalación del segundo nodo, configuración del load balancer, sincronización de base de datos compartida, y failover automático para garantizar continuidad del servicio.',
-              youtubeId: 'fd2HQGhoU7Q',
+              title: 'Cómo Activar el Deep Security Agent',
+              description: 'Procedimiento oficial de activación del agente una vez instalado: obtención del paquete, activación contra el Manager, asignación de política de seguridad y comprobación del estado (Managed/Online) en la consola central.',
+              youtubeId: 'KwwQ-BOA75s',
             },
             {
-              title: 'Configuración Multi-Tenant del Manager',
-              description: 'Habilitación y configuración del modo multi-tenant en Deep Security Manager para proveedores de servicios gestionados (MSSP): creación de tenants, asignación de recursos, aislamiento de políticas y gestión centralizada de múltiples clientes.',
-              youtubeId: 'HBLgL_UEo5c',
+              title: 'Instalación y Despliegue del Agente en Windows',
+              description: 'Instalación completa del Deep Security Agent en máquinas Windows: descarga o exportación del instalador desde el Manager, instalación manual y por script, activación del agente, asignación de política y verificación de la comunicación con el Manager y el relay.',
+              youtubeId: 'Xsa95NWlj5o',
             },
             {
-              title: 'Instalación del Agente en Windows Server',
-              description: 'Instalación completa del Deep Security Agent en Windows Server: descarga del paquete desde el Manager, instalación silenciosa vía línea de comandos, activación del agente, asignación de política y verificación de la comunicación bidireccional.',
-              youtubeId: 'R1AtSaW9UlI',
+              title: 'Instalación del Agente en Linux',
+              description: 'Instalación del Deep Security Agent en distribuciones Linux: descarga del paquete RPM/DEB, instalación vía terminal, activación contra el Manager, asignación de política y verificación de los módulos de protección activos (Antimalware, IPS, Firewall).',
+              youtubeId: '9yeSPrRihaY',
             },
             {
-              title: 'Configuración del Relay Server',
-              description: 'Configuración y propósito del Relay Server en la arquitectura Deep Security: distribución eficiente de actualizaciones de seguridad (patrones antimalware, reglas IPS), reducción del consumo de ancho de banda y gestión de múltiples relays.',
-              youtubeId: 'WwOfMWpzL5Q',
+              title: 'Filtrado de Tráfico con Reglas de Firewall',
+              description: 'Configuración del módulo de Firewall de Deep Security: creación de reglas de tráfico, control de conexiones entrantes y salientes, uso de las reglas predefinidas de Trend Micro y buenas prácticas para proteger los servicios expuestos del servidor.',
+              youtubeId: '_lSEbTMZAHw',
             },
             {
-              title: 'Configuración de Smart Folders en el Manager',
-              description: 'Uso de Smart Folders para organizar dinámicamente los endpoints protegidos: creación de filtros basados en propiedades del agente (SO, grupo, etiquetas, estado de protección), facilitando la gestión de infraestructuras grandes y complejas.',
-              youtubeId: 'zC065mbsuMQ',
+              title: 'Protección de Servidores contra Vulnerabilidades',
+              description: 'Uso del módulo IPS de Deep Security para proteger servidores contra vulnerabilidades: aplicación de reglas de detección y prevención de intrusiones, respuesta ante exploits y configuraciones recomendadas para mantener seguros los sistemas operativos y aplicaciones.',
+              youtubeId: 'h7FUl8jKNxQ',
             },
             {
-              title: 'Actualización del Agente en Windows Server',
-              description: 'Procedimiento de actualización del Deep Security Agent en servidores Windows: verificación de la versión actual, planificación del upgrade (manual vs. programado), ejecución de la actualización desde la consola central y validación post-upgrade.',
-              youtubeId: '0ieLN0BpHWc',
+              title: 'Supervisión de Registros en Servidores Protegidos',
+              description: 'Monitoreo de servidores protegidos: revisión de los registros y eventos capturados por Deep Security, interpretación de alertas de seguridad, detección de cambios y uso del registro centralizado para investigar actividades sospechosas.',
+              youtubeId: 'wTo2i_rNdTg',
             },
             {
-              title: 'Instalación del Agente en Linux Server',
-              description: 'Instalación del Deep Security Agent en distribuciones Linux (RHEL, CentOS, Ubuntu): descarga del paquete RPM/DEB, instalación vía terminal, activación y asignación de política, verificación de módulos de protección activos (Antimalware, IPS, Firewall).',
-              youtubeId: 'XI1a-TX4Cy0',
+              title: 'Configuración Multi-Tenant del Manager (MSSP)',
+              description: 'Habilitación y configuración del modo multi-tenant en Deep Security Manager para proveedores de servicios gestionados (MSSP): creación de tenants, aislamiento de políticas, asignación de recursos y gestión centralizada de múltiples clientes desde una sola consola.',
+              youtubeId: 'm9SFv533LK0',
             },
           ],
         },
@@ -994,13 +995,31 @@ class="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 pr-10 
                       .filter(v => v.youtubeId)
                   : [],
               }));
+            migrateData(parsed);
             return parsed;
           }
         }
       } catch (err) {
         console.warn('[CMS] localStorage parse error — usando datos por defecto.', err);
       }
-      return JSON.parse(JSON.stringify(DEFAULT_DATA));
+      return { ...JSON.parse(JSON.stringify(DEFAULT_DATA)), dataVersion: DATA_VERSION };
+    }
+
+    /**
+     * Migración v1 -> v2: la lista original de "Trend Micro Deep Security"
+     * apuntaba a videos con embebido deshabilitado por el propietario (401).
+     * En esta versión se restablecen los 12 módulos con videos oficiales
+     * verificados como embebibles, conservando el resto de herramientas y
+     * cualquier módulo personalizado de otras herramientas.
+     */
+    function migrateData(parsed) {
+      if (parsed.dataVersion === DATA_VERSION) return;
+      const tm = parsed.tools.find(t => t.id === 'trend-micro');
+      const tmDefault = DEFAULT_DATA.tools.find(t => t.id === 'trend-micro');
+      if (tm && tmDefault) {
+        tm.videos = tmDefault.videos.map(v => ({ ...v }));
+      }
+      parsed.dataVersion = DATA_VERSION;
     }
 
     function saveData() {
